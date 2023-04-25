@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-module.exports = {
+export default {
   production: {
     username: process.env.PROD_DB_USERNAME,
     password: process.env.PROD_DB_PASSWORD,
