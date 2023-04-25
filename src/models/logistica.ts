@@ -9,7 +9,7 @@ import {
 } from 'sequelize-typescript'
 
 @Table
-class Logistica extends Model{
+export default class Logistica extends Model{
     @AutoIncrement
     @PrimaryKey
     @Column

@@ -7,20 +7,22 @@ import {
     AutoIncrement,
     DataType
 } from 'sequelize-typescript'
+import Produto from './produto';
+import Kit from './kit';
 
 @Table
-class Mercadoria extends Model{
+export default class Mercadoria extends Model{
     @PrimaryKey
     @AutoIncrement
     @Column
     id: number
 
     @Column
-    //@ForeignKey(() => )
+    @ForeignKey(() => Produto)
     id_prod: number
 
     @Column
-    //@ForeignKey(() => )
+    @ForeignKey(() => Kit)
     id_kit: number 
 
     @Column

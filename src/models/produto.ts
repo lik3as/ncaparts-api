@@ -1,3 +1,7 @@
+import Marca from './marca'
+import Modelo from './modelo'
+import Tipo from './tipo'
+
 import {
     Table,
     Model,
@@ -5,40 +9,58 @@ import {
     PrimaryKey,
     AutoIncrement,
     DataType,
-    ForeignKey
+    ForeignKey,
+    HasOne
 } from 'sequelize-typescript'
 
+/*
+    * Os primeiros três conjuntos de associação servem para
+    * classificar o produto como no seguinte exemplo:
+    * Eletrônico -> Tipo
+    * Subtitipo -> Celular
+    * Samsung -> Marca
+    * S10 -> Modelo
+*/
+
 @Table
-class Produto extends Model{
+export default class Produto extends Model{
     @AutoIncrement
     @PrimaryKey
     @Column
     id: number;
 
-    //@ForeignKey(() => )
+    @ForeignKey(() => Tipo)
     @Column
-    id_prod: number;
+    id_tipo: number;
 
-    //@ForeignKey(() => )
+    @HasOne(() => Tipo)
+    tipo: Tipo;
+
+    //FALTA O SUBTIPO
+
+    @ForeignKey(() => Marca)
     @Column
-    id_tipo: number
+    id_marca: number;
 
-    //@ForeignKey(() => )
-    @Column
-    id_marca: number
+    @HasOne(() => Marca)
+    marca: Marca
 
-    //@ForeignKey(() => )
-    @Column
-    id_modelo: number
 
+    @ForeignKey(() => Modelo)
     @Column
-    sku: string
+    id_modelo: number;
 
-    @Column
-    final: boolean
+    @HasOne(() => Modelo)
+    modelo: Modelo;
+
 
     @Column
-    desc: string
+    sku: string;
 
+    @Column
+    final: boolean;
+
+    @Column
+    desc: string;
 
 }

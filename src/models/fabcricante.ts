@@ -5,16 +5,28 @@ import {
     PrimaryKey,
     ForeignKey,
     AutoIncrement,
-    DataType
+    DataType,
+    BelongsTo
 } from 'sequelize-typescript'
+import Produto from './produto';
 
 @Table
-class Fabricante extends Model{
+export default class Fabricante extends Model{
     @AutoIncrement
     @PrimaryKey
     @Column 
     id: number;
     
+    /*
+        Product Auto-Association
+    */
+    @ForeignKey(() => Produto)
+    @Column
+    id_prod: number;
+
+    @BelongsTo(() => Produto)
+    produto: Produto
+
     @Column
     cnpj: string;
 
