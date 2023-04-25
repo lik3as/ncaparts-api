@@ -1,8 +1,13 @@
 import Marca from './marca'
 import Modelo from './modelo'
 import Tipo from './tipo'
+import Subtipo from './subtipo'
+import Fabricante from './fabricante'
+import ProdFab from './prod_fab'
+
 
 import {
+    BelongsToMany,
     Table,
     Model,
     Column,
@@ -24,43 +29,53 @@ import {
 
 @Table
 export default class Produto extends Model{
-    @AutoIncrement
-    @PrimaryKey
-    @Column
-    id: number;
+  @AutoIncrement
+  @PrimaryKey
+  @Column
+  id: number;
 
-    @ForeignKey(() => Tipo)
-    @Column
-    id_tipo: number;
-
-    @HasOne(() => Tipo)
-    tipo: Tipo;
-
-    //FALTA O SUBTIPO
-
-    @ForeignKey(() => Marca)
-    @Column
-    id_marca: number;
-
-    @HasOne(() => Marca)
-    marca: Marca
+  @ForeignKey(() => Tipo)
+  @Column
+  id_tipo: number;
 
 
-    @ForeignKey(() => Modelo)
-    @Column
-    id_modelo: number;
-
-    @HasOne(() => Modelo)
-    modelo: Modelo;
+  @HasOne(() => Tipo)
+  tipo: Tipo;
 
 
-    @Column
-    sku: string;
+  @ForeignKey(() => Subtipo)
+  @Column
+  id_subtipo: number;
+  
+  @HasOne(() => Subtipo)
+  subtipo: Subtipo
 
-    @Column
-    final: boolean;
 
-    @Column
-    desc: string;
+  @ForeignKey(() => Marca)
+  @Column
+  id_marca: number;
 
+  @HasOne(() => Marca)
+  marca: Marca;
+
+
+  @ForeignKey(() => Modelo)
+  @Column
+  id_modelo: number;
+
+  @HasOne(() => Modelo)
+  modelo: Modelo;
+
+
+  @Column
+  sku: string;
+
+  @Column
+  final: boolean;
+
+  @Column
+  desc: string;
+  
+  @BelongsToMany(() => Fabricante, () => ProdFab)
+  fabricantes: Fabricante[]
 }

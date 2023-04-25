@@ -13,5 +13,6 @@ class Database{
 const db: Database = new Database();
 
 export default Database;
-export * from './cliente'
-export * from './venda'
+
+export * as Cliente from './cliente'
+export * as Venda from './venda'
