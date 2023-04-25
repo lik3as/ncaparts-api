@@ -3,10 +3,13 @@ import {
     Table,
     Column,
     PrimaryKey,
-    AutoIncrement
+    AutoIncrement,
+    HasMany
 } from 'sequelize-typescript'
+import Produto from './produto';
 
-class Marca extends Model{
+@Table
+export default class Marca extends Model{
     @PrimaryKey
     @AutoIncrement
     @Column
@@ -14,4 +17,7 @@ class Marca extends Model{
 
     @Column
     nome: string
+
+    @HasMany(() => Produto)
+    produtos: Produto[]
 }

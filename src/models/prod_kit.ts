@@ -1,18 +1,18 @@
 import {
-    Table,
     Model,
+    Table,
     Column,
     PrimaryKey,
     AutoIncrement
 } from 'sequelize-typescript'
 
 @Table
-export default class Kit extends Model{
+class ProdKit extends Model{
     @AutoIncrement
     @PrimaryKey
     @Column
     id: number;
-    
+
     @Column
-    apelido: string;
+    qtd: number;
 }

@@ -10,7 +10,7 @@ import {
 } from 'sequelize-typescript'
 
 @Table
-class Venda extends Model{
+export default class Venda extends Model{
     @PrimaryKey
     @AutoIncrement
     @Column
@@ -30,5 +30,3 @@ class Venda extends Model{
     valor_total: number;
 
 }
-
-export default Venda;

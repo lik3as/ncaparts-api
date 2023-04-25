@@ -15,7 +15,7 @@ import {
 }))
 
 @Table
-class Cliente extends Model{
+export default class Cliente extends Model{
     @AutoIncrement
     @PrimaryKey
     @Column
@@ -33,5 +33,3 @@ class Cliente extends Model{
     @Column
     revendedor: boolean;
 };
-
-export default Cliente;
