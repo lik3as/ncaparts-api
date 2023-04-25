@@ -35,6 +35,10 @@ class Produto extends Model{
     sku: string
 
     @Column
+    final: boolean
+
+    @Column
     desc: string
+
 
 }
