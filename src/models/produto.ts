@@ -8,15 +8,15 @@ import {
 } from './index'
 
 import {
-    BelongsToMany,
-    Table,
-    Model,
-    Column,
-    PrimaryKey,
-    AutoIncrement,
-    DataType,
-    ForeignKey,
-    HasOne
+  BelongsToMany,
+  Table,
+  Model,
+  Column,
+  PrimaryKey,
+  AutoIncrement,
+  DataType,
+  ForeignKey,
+  HasOne
 } from 'sequelize-typescript'
 
 /*

@@ -2,12 +2,20 @@ import {Sequelize} from 'sequelize-typescript';
 import prod_db from '../config/config';
 
 class Database{
-    private connection: Sequelize;
+  private connection: Sequelize;
 
-    constructor() {
-        this.connection = new Sequelize(prod_db as Object);
-        this.connection.sync({force: true});
+  constructor() {
+    this.connection.sync({force: true});
+  }
+
+  private connect(): void{
+    try{ this.connection = new Sequelize(prod_db as Object);
+    } catch (e){
+      console.log(e)
+    } finally{
+      this.connection.close()
     }
+  }
 }
 
 const db: Database = new Database();

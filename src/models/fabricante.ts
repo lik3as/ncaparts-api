@@ -3,14 +3,14 @@ import {
   Produto
 } from './index'
 import {
-    Table,
-    Model,
-    Column,
-    PrimaryKey,
-    ForeignKey,
-    AutoIncrement,
-    BelongsTo,
-    BelongsToMany,
+  Table,
+  Model,
+  Column,
+  PrimaryKey,
+  ForeignKey,
+  AutoIncrement,
+  BelongsTo,
+  BelongsToMany,
 } from 'sequelize-typescript'
 
 @Table
