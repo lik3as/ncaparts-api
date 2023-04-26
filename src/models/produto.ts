@@ -6,19 +6,21 @@ import {
   Fabricante,
   ProdFab,
   ProdKit,
-  Kit
+  Kit,
+  Mercadoria
 } from './index'
 
 import {
+  HasMany,
   BelongsToMany,
   Table,
   Model,
   Column,
   PrimaryKey,
   AutoIncrement,
-  DataType,
   ForeignKey,
-  HasOne
+  HasOne,
+  BelongsTo
 } from 'sequelize-typescript'
 
 /*
@@ -38,7 +40,17 @@ export class Produto extends Model{
   id: number;
 
   /*
-  *   OneToMany Associations
+      Product Auto-Association
+  */
+  @ForeignKey(() => Produto)
+  @Column
+  id_prod: number;
+
+  @BelongsTo(() => Produto)
+  produto: Produto
+
+  /*
+  *   OneToMany Product Spec Associations
   */
 
   @ForeignKey(() => Tipo)
@@ -73,6 +85,16 @@ export class Produto extends Model{
   @HasOne(() => Modelo)
   modelo: Modelo;
 
+  /*
+  *   OneToMany Other Associations
+  */
+
+  @ForeignKey(() => Mercadoria)
+  @Column
+  id_merc: number;
+
+  @HasMany(() => Mercadoria)
+  mercadorias: Mercadoria[];
 
   @Column
   sku: string;
