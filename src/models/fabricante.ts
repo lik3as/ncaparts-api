@@ -1,3 +1,4 @@
+import { where } from 'sequelize';
 import {
   ProdFab,
   Produto
@@ -11,7 +12,31 @@ import {
   AutoIncrement,
   BelongsTo,
   BelongsToMany,
+  DefaultScope,
+  Scopes
 } from 'sequelize-typescript'
+
+export type body_fab = {
+  id: number
+  nome: string,
+  cnpj: string,
+  contato: string,
+  local:string,
+  email:string,
+}
+
+export type scope_fab = 'join_in_prod';
+
+@Scopes(() => (
+  {
+  join_in_prod: {
+    include: [{
+        model: Produto,
+        required: true
+      }
+    ],
+  }
+}))
 
 @Table
 export class Fabricante extends Model{
@@ -20,16 +45,6 @@ export class Fabricante extends Model{
   @Column 
   id: number;
   
-  /*
-      Product Auto-Association
-  */
-  @ForeignKey(() => Produto)
-  @Column
-  id_prod: number;
-
-  @BelongsTo(() => Produto)
-  produto: Produto
-
   @Column
   cnpj: string;
 

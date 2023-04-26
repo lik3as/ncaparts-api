@@ -4,9 +4,27 @@ import {
   Column,
   PrimaryKey,
   AutoIncrement,
-  HasMany
+  HasMany,
+  Scopes
 } from 'sequelize-typescript'
 import {Produto} from './index';
+
+export type body_modelo = {
+  id: number,
+  nome: string
+}
+export type scope_modelo = 'join_in_prod'
+
+//Falta fazer scope
+
+@Scopes(() => ({
+  join_in_prod: {
+    include: [{
+      model: Produto,
+      required: true
+    }]
+  }
+}))
 
 @Table
 export class Modelo extends Model{
