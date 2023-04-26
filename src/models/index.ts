@@ -29,9 +29,9 @@ const db: Database = new Database();
 
 export default db;
 
-export {Cliente} from './cliente'
+export {Cliente, body_cliente} from './cliente'
 export {Venda} from './venda'
-export {Fabricante} from './fabricante'
+export {Fabricante, body_fab, scope_fab} from './fabricante'
 export {Kit} from './kit'
 export {Logistica} from './logistica'
 export {Marca} from './marca'
