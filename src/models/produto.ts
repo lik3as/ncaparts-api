@@ -4,7 +4,9 @@ import {
   Tipo,
   Subtipo,
   Fabricante,
-  ProdFab
+  ProdFab,
+  ProdKit,
+  Kit
 } from './index'
 
 import {
@@ -34,6 +36,10 @@ export class Produto extends Model{
   @PrimaryKey
   @Column
   id: number;
+
+  /*
+  *   OneToMany Associations
+  */
 
   @ForeignKey(() => Tipo)
   @Column
@@ -77,6 +83,14 @@ export class Produto extends Model{
   @Column
   desc: string;
   
+  /*
+  *   Many To Many Associations
+  */
+
   @BelongsToMany(() => Fabricante, () => ProdFab)
-  fabricantes: Fabricante[]
+  fabricantes: Fabricante[];
+
+  @BelongsToMany(() => Kit, () => ProdKit)
+  kits: Kit[];
+
 }
