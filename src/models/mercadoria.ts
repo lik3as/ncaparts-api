@@ -1,4 +1,9 @@
 import {
+    Produto,
+    Kit
+} from './index'
+
+import {
     PrimaryKey,
     ForeignKey,
     Column,
@@ -7,11 +12,9 @@ import {
     AutoIncrement,
     DataType
 } from 'sequelize-typescript'
-import Produto from './produto';
-import Kit from './kit';
 
 @Table
-export default class Mercadoria extends Model{
+export class Mercadoria extends Model{
     @PrimaryKey
     @AutoIncrement
     @Column

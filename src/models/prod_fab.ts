@@ -1,5 +1,5 @@
-import Produto from './produto';
-import Fabricante from './fabricante'
+import {Produto} from './produto';
+import {Fabricante} from './fabricante'
 import {
   Model,
   Table,
@@ -10,7 +10,7 @@ import {
 } from 'sequelize-typescript'
 
 @Table
-export default class ProdFab extends Model{
+export class ProdFab extends Model{
   @PrimaryKey
   @AutoIncrement
   @Column

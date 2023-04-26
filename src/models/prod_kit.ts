@@ -7,7 +7,7 @@ import {
 } from 'sequelize-typescript'
 
 @Table
-class ProdKit extends Model{
+export class ProdKit extends Model{
     @AutoIncrement
     @PrimaryKey
     @Column

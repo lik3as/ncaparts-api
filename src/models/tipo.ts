@@ -6,10 +6,10 @@ import {
     AutoIncrement,
     HasMany
 } from 'sequelize-typescript'
-import Produto from './produto';
+import {Produto} from './produto';
 
 @Table
-export default class Tipo extends Model{
+export class Tipo extends Model{
     @PrimaryKey
     @AutoIncrement
     @Column

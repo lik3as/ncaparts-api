@@ -7,7 +7,7 @@ import {
 } from 'sequelize-typescript'
 
 @Table
-export default class Kit extends Model{
+export class Kit extends Model{
     @AutoIncrement
     @PrimaryKey
     @Column
