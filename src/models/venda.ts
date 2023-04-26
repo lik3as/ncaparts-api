@@ -10,7 +10,7 @@ import {
 } from 'sequelize-typescript'
 
 @Table
-export default class Venda extends Model{
+export class Venda extends Model{
     @PrimaryKey
     @AutoIncrement
     @Column

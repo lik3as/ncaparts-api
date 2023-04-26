@@ -1,4 +1,4 @@
-import Venda from './venda'
+import {Venda} from './index'
 import {
     Table,
     Column,
@@ -15,7 +15,7 @@ import {
 }))
 
 @Table
-export default class Cliente extends Model{
+export class Cliente extends Model{
     @AutoIncrement
     @PrimaryKey
     @Column

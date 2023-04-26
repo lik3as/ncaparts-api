@@ -1,10 +1,11 @@
-import Marca from './marca'
-import Modelo from './modelo'
-import Tipo from './tipo'
-import Subtipo from './subtipo'
-import Fabricante from './fabricante'
-import ProdFab from './prod_fab'
-
+import {
+  Marca,
+  Modelo,
+  Tipo,
+  Subtipo,
+  Fabricante,
+  ProdFab
+} from './index'
 
 import {
     BelongsToMany,
@@ -28,7 +29,7 @@ import {
 */
 
 @Table
-export default class Produto extends Model{
+export class Produto extends Model{
   @AutoIncrement
   @PrimaryKey
   @Column

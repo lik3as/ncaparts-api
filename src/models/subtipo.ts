@@ -1,4 +1,4 @@
-import Produto from './produto'
+import {Produto} from './index'
 import {
   Model,
   Table,
@@ -10,7 +10,7 @@ import {
 } from 'sequelize-typescript'
 
 @Table
-export default class Subtipo extends Model{
+export class Subtipo extends Model{
   @PrimaryKey
   @AutoIncrement
   @Column

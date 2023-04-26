@@ -12,18 +12,18 @@ class Database{
 
 const db: Database = new Database();
 
-export default Database;
+export default db;
 
-export * as Cliente from './cliente'
-export * as Venda from './venda'
-export * as Fabricante from './fabricante'
-export * as Kit from './kit'
-export * as Logistica from './logistica'
-export * as Marca from './marca'
-export * as Mercadoria from './mercadoria'
-export * as Modelo from './modelo'
-export * as ProdFab from './prod_fab'
-export * as ProdKit from './prod_kit'
-export * as Produto from './produto'
-export * as Subtipo from './subtipo'
-export * as Tipo from './tipo'
+export {Cliente} from './cliente'
+export {Venda} from './venda'
+export {Fabricante} from './fabricante'
+export {Kit} from './kit'
+export {Logistica} from './logistica'
+export {Marca} from './marca'
+export {Mercadoria} from './mercadoria'
+export {Modelo} from './modelo'
+export {ProdFab} from './prod_fab'
+export {ProdKit} from './prod_kit'
+export {Produto} from './produto'
+export {Subtipo} from './subtipo'
+export {Tipo} from './tipo'

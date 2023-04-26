@@ -1,3 +1,4 @@
+import {Produto} from './index';
 import {
     Model,
     Table,
@@ -6,10 +7,9 @@ import {
     AutoIncrement,
     HasMany
 } from 'sequelize-typescript'
-import Produto from './produto';
 
 @Table
-export default class Marca extends Model{
+export class Marca extends Model{
     @PrimaryKey
     @AutoIncrement
     @Column
