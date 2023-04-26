@@ -6,16 +6,22 @@ class Database{
 
   constructor() {
     this.connect();
-    this.connection.sync({force: true});
+    this.sync();
   }
 
   private connect(): void{
-    try{ this.connection = new Sequelize(prod_db as Object);
+    try{
+      this.connection = new Sequelize(prod_db as Object);
     } catch (e){
       console.log(e);
     } finally{
       this.connection.close();
     }
+
+  }
+
+  public sync(): void{
+    this.connection.sync({force: true});
   }
 }
 
