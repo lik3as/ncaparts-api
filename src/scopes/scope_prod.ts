@@ -1,24 +1,24 @@
-import { prod_join } from './scope-types'
+import { join } from './scope-types'
 import { Produto, Tipo, Subtipo, Marca, Modelo, Mercadoria} from '../models/index'
 import { Op, Sequelize} from 'sequelize'
 
 export default () => {
   const sequelize: Sequelize = new Sequelize();
   return{
-    join_in_prod(is_final_prod: boolean): prod_join {
+    join_in_prod(is_final_prod: boolean): join {
       return {
         include: {
           model: Produto,
           required: true,
           where: {
             final: {
-              [Op.like]: true
+              [Op.eq]: true
             }
           }
         }
       }
     },
-    join_in_tipo(fk_tipo: number): prod_join {
+    join_in_tipo(fk_tipo: number): join {
       return {
         include: {
           model: Tipo,
@@ -31,7 +31,7 @@ export default () => {
         }
       }
     },
-    join_in_subtipo(fk_subtipo: number): prod_join {
+    join_in_subtipo(fk_subtipo: number): join {
       return {
         include: {
           model: Subtipo,
@@ -44,7 +44,7 @@ export default () => {
         }
       }
     },
-    join_in_marca(fk_marca: number): prod_join {
+    join_in_marca(fk_marca: number): join {
       return {
         include: {
           model: Marca,
@@ -57,7 +57,7 @@ export default () => {
         }
       }
     },
-    join_in_modelo(fk_modelo: number): prod_join {
+    join_in_modelo(fk_modelo: number): join {
       return {
         include: {
           model: Modelo,
@@ -70,7 +70,7 @@ export default () => {
         }
       }
     },
-    join_in_merc(fk_merc: number): prod_join {
+    join_in_merc(fk_merc: number): join {
       return {
         include: {
           model: Mercadoria,
@@ -84,7 +84,7 @@ export default () => {
       }
     },
     join_in_categories(nome_tipo: number, nome_subtipo: number,
-      nome_marca: number, nome_modelo: string): prod_join {
+      nome_marca: number, nome_modelo: string): join {
         return {
           include: [{
             model: Tipo,
