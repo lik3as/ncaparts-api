@@ -19,16 +19,6 @@ export type body_logi = {
   c_real: number,
   c_dolar: number
 }
-export type scope_logi = 'join_in_merc'
-
-@Scopes(() => ({
-  join_in_merc: {
-    include: [{
-      model: Mercadoria,
-      required: true
-    }]
-  }
-}))
 
 @Table
 export class Logistica extends Model{

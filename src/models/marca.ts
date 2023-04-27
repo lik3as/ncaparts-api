@@ -12,7 +12,7 @@ export type body_marca = {
   id: number,
   nome: string,
 }
-export type scope_marca = 'join_in_prod'
+
 @Table
 export class Marca extends Model{
   @PrimaryKey

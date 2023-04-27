@@ -26,22 +26,7 @@ export type body_merc = {
   v_real_revenda: number,
   v_dolar: number
 }
-export type scope_merc = 'join_in_prod' | 'join_in_kit';
 
-@Scopes(() => ({
-  join_in_prod: {
-    include: [{
-      model: Produto,
-      required: true
-    }]
-  },
-  join_in_kit: {
-    include: [{
-      model: Kit,
-      required: true
-    }]
-  }
-}))
 
 @Table
 export class Mercadoria extends Model{

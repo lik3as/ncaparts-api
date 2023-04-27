@@ -1,3 +1,4 @@
+import { FindOptions, IncludeOptions, Includeable, ModelOptions } from 'sequelize';
 import {Sequelize} from 'sequelize-typescript';
 import prod_db from '../config/config';
 
@@ -29,9 +30,14 @@ const db: Database = new Database();
 
 export default db;
 
+/*
+*   Declaring Scopes and it dependencies again for changing the
+*   return options to the newly created type 'scope'
+*/
+
 export {Cliente, body_cliente} from './cliente'
 export {Venda} from './venda'
-export {Fabricante, body_fab, scope_fab} from './fabricante'
+export {Fabricante, body_fab} from './fabricante'
 export {Kit} from './kit'
 export {Logistica} from './logistica'
 export {Marca} from './marca'
