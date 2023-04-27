@@ -15,15 +15,6 @@ export type body_modelo = {
 }
 export type scope_modelo = 'join_in_prod'
 
-//Falta fazer scope
-
-@Scopes(() => ({
-  join_in_prod: {
-    include: [{
-      model: Produto,
-      required: true
-    }]
-  }
 }))
 
 @Table

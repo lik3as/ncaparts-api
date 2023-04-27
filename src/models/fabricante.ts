@@ -25,19 +25,6 @@ export type body_fab = {
   email:string,
 }
 
-export type scope_fab = 'join_in_prod';
-
-@Scopes(() => (
-  {
-  join_in_prod: {
-    include: [{
-        model: Produto,
-        required: true
-      }
-    ],
-  }
-}))
-
 @Table
 export class Fabricante extends Model{
   @AutoIncrement
@@ -60,6 +47,6 @@ export class Fabricante extends Model{
   @Column
   email: string;
   
-  @BelongsToMany(() => Produto, () => ProdFab)
+  @BelongsToMany(() => Produto, () => ProdFab, 'id_fab', 'id_prod')
   produtos: Produto[]
 }
