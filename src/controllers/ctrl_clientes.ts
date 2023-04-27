@@ -10,4 +10,6 @@ class ClienteCtrl{
     this._all = Cliente.findAll();
     return this.all;
   }
+
+
 }

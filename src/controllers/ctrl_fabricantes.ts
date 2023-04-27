@@ -1,4 +1,6 @@
-import { Fabricante, body_fab, scope_fab } from "../models/index";
+import { Fabricante, body_fab} from "../models/index";
+//import { fab } from '../scopes/scopes'
+
 
 type body = Promise<body_fab[] | undefined>
 
@@ -13,9 +15,9 @@ export default class FabricanteCtrl{
     return this._all;
   }
 
-  public getProductsIn(scope: scope_fab): body{
-    this._in_products = Fabricante.scope(scope).findAll()
+  /*public getProductsIn(scope: scope_fab): body{
+    this._in_products = Fabricante.scope({}).findAll()
     return this._in_products;
-  }
+  }*/
 
 }
