@@ -1,3 +1,5 @@
+import {Scopes, scope_prod} from '../scopes/scopes'
+
 import {
   Marca,
   Modelo,
@@ -7,7 +9,7 @@ import {
   ProdFab,
   ProdKit,
   Kit,
-  Mercadoria
+  Mercadoria,
 } from './index'
 
 import {
@@ -20,7 +22,7 @@ import {
   AutoIncrement,
   ForeignKey,
   HasOne,
-  BelongsTo
+  BelongsTo,
 } from 'sequelize-typescript'
 
 /*
@@ -32,6 +34,28 @@ import {
     * S10 -> Modelo
 */
 
+export type body_prod = {
+  id: number,
+  id_prod: number,
+  id_tipo: number,
+  id_subtipo: number,
+  id_marca: number,
+  id_modelo: number,
+  id_merc: number,
+  sku: string,
+  final: boolean,
+  desc: string
+}
+
+
+
+@Scopes(scope_prod)
+
+/*
+*   Categories are:
+*   tipo, subtipo, marca and modelo
+*/
+
 @Table
 export class Produto extends Model{
   @AutoIncrement
@@ -40,7 +64,7 @@ export class Produto extends Model{
   id: number;
 
   /*
-      Product Auto-Association
+  *   Product Auto-Association
   */
   @ForeignKey(() => Produto)
   @Column
@@ -109,10 +133,10 @@ export class Produto extends Model{
   *   Many To Many Associations
   */
 
-  @BelongsToMany(() => Fabricante, () => ProdFab)
+  @BelongsToMany(() => Fabricante, () => ProdFab, 'id_prod', 'id_fab')
   fabricantes: Fabricante[];
 
-  @BelongsToMany(() => Kit, () => ProdKit)
+  @BelongsToMany(() => Kit, () => ProdKit, 'id_prod', 'id_kit')
   kits: Kit[];
 
 }
