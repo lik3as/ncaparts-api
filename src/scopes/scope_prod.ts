@@ -83,7 +83,7 @@ export default () => {
         }
       }
     },
-    join_in_categories(nome_tipo: number, nome_subtipo: number,
+    join_in_categories_by_name(nome_tipo: number, nome_subtipo: number,
       nome_marca: number, nome_modelo: string): join {
         return {
           include: [{
@@ -93,7 +93,7 @@ export default () => {
               id_tipo: {
                 [Op.eq]: sequelize.literal(
                   `SELECT id FROM Tipo ` +
-                  `WHERE nome = ${nome_tipo}`
+                  `WHERE nome = ${nome_tipo};`
                   )
               }
             }
@@ -104,7 +104,7 @@ export default () => {
               id_subtipo: {
                 [Op.eq]: sequelize.literal(
                   `SELECT id FROM Subtipo ` +
-                  `WHERE nome = ${nome_subtipo}`
+                  `WHERE nome = ${nome_subtipo};`
                 )
               }
             }
@@ -115,7 +115,7 @@ export default () => {
               id_marca: {
                 [Op.eq]: sequelize.literal(
                   `SELECT id FROM Marca ` +
-                  `WHERE nome = ${nome_marca}`
+                  `WHERE nome = ${nome_marca};`
                 )
               }
             }
@@ -126,7 +126,7 @@ export default () => {
               id_modelo: {
                 [Op.eq]: sequelize.literal(
                   `SELECT id FROM Modelo `+
-                  `WHERE nome = ${nome_modelo}`
+                  `WHERE nome = ${nome_modelo};`
                   )
               }
             }
