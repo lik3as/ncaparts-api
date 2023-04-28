@@ -35,9 +35,9 @@ export default db;
 *   return options to the newly created type 'scope'
 */
 
-export {Cliente, body_cliente} from './cliente'
+export {Cliente} from './cliente'
 export {Venda} from './venda'
-export {Fabricante, body_fab} from './fabricante'
+export {Fabricante} from './fabricante'
 export {Kit} from './kit'
 export {Logistica} from './logistica'
 export {Marca} from './marca'

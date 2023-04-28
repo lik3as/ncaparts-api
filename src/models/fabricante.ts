@@ -1,19 +1,17 @@
-import { where } from 'sequelize';
+import {Scopes, scope_fab} from '../scopes/scopes'
+
 import {
   ProdFab,
   Produto
 } from './index'
+
 import {
   Table,
   Model,
   Column,
   PrimaryKey,
-  ForeignKey,
   AutoIncrement,
-  BelongsTo,
   BelongsToMany,
-  DefaultScope,
-  Scopes
 } from 'sequelize-typescript'
 
 export type body_fab = {
@@ -24,6 +22,8 @@ export type body_fab = {
   local:string,
   email:string,
 }
+
+@Scopes(scope_fab)
 
 @Table
 export class Fabricante extends Model{
@@ -50,3 +50,5 @@ export class Fabricante extends Model{
   @BelongsToMany(() => Produto, () => ProdFab, 'id_fab', 'id_prod')
   produtos: Produto[]
 }
+
+Fabricante.getAttributes()
