@@ -83,7 +83,7 @@ export default () => {
         }
       }
     },
-    join_in_categories_by_name(nome_tipo: number, nome_subtipo: number,
+    join_in_categories(nome_tipo: number, nome_subtipo: number,
       nome_marca: number, nome_modelo: string): join {
         return {
           include: [{
