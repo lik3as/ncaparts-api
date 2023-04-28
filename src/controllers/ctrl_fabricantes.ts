@@ -1,23 +1,29 @@
-import { Fabricante, body_fab} from "../models/index";
-//import { fab } from '../scopes/scopes'
+import { Fabricante } from "../models/index";
+import IFab, {param, generic_body} from '../contracts/IControllers'
 
 
-type body = Promise<body_fab[] | undefined>
-
-export default class FabricanteCtrl{
-  private _all: body;
-  private _in_products: body
+export default class FabricanteCtrl implements IFab<Fabricante>{
 
   constructor(){ }
 
-  get all(): body{
-    this._all = Fabricante.findAll();
-    return this._all;
+  public async getBodies({method, model_fab}: param) : generic_body<Fabricante[]> { 
+    return (typeof model_fab[1] == undefined ) ?
+     Fabricante.scope(
+      {method: `${method}${model_fab[0]}`}
+      ).findAll()
+      :
+      Fabricante.scope(
+      {method: [`${method}${model_fab[0]}`, model_fab[1]]}
+      ).findAll()
   }
 
-  /*public getProductsIn(scope: scope_fab): body{
-    this._in_products = Fabricante.scope({}).findAll()
-    return this._in_products;
-  }*/
-
+  public async getBody({method, model_fab}: param): generic_body<Fabricante> {
+    if (method!='find_by_id')
+      throw new Error("Este método retorna uma lista.");
+    return Fabricante.scope(
+      {method: [`${method}${model_fab[0]}`, model_fab[1]]}
+      ).findOne()
+  }
 }
+
+const fabri: FabricanteCtrl = new FabricanteCtrl()
