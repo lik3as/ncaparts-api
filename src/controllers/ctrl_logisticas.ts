@@ -1,13 +1,29 @@
-import ICtrl, {param, body} from  '../contracts/IControllers'
-import { Logistica } from '../models/index'
+import { Logistica } from "../models/index";
+import IFab, {param_body, param_bodies, body} from '../contracts/IControllers'
 
-export default class LogiCtrl implements ICtrl<Logistica> {
-  
-  getBodies({method, on, args }: param): body<Logistica[]>{
-    throw new Error('Uninplemented error');
-  }
-  getBody({method, on, args }: param): body<Logistica>{
-    throw new Error('Uninplemented error');
+
+export default class LogisticaCtrl implements IFab<Logistica>{
+
+  constructor(){ }
+
+  public async getBodies({method, on, args}: param_bodies) : body<Logistica[]> { 
+    return (typeof args == undefined ) ?
+     Logistica.scope(
+      {method: `${method}${on}`}
+      ).findAll()
+      :
+      Logistica.scope(
+      {method: [`${method}${on}`, args]}
+      ).findAll()
   }
 
+  public async getBody({ method, on, args }: param_body): body<Logistica> {
+    if (method!='find_by_')
+      throw new Error("Este método retorna uma lista.");
+    return Logistica.scope(
+      {method: [`${method}${on}`, args]}
+      ).findOne()
+  }
 }
+
+const fabri: LogisticaCtrl = new LogisticaCtrl()

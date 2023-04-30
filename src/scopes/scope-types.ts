@@ -12,7 +12,7 @@ export declare function Scopes(scopesGetter: ScopesOptionsGetter): Function;
 
 export type method_specific = 'prod' | 'fab' | 'logi' | 'tipo' | 'subtipo' |
 'marca' | 'modelo' | 'merc' | 'categories';
-export type method_specific_key = | 'id' | 'name'
+export type method_specific_key =  'id' | 'name'
 
 /**
  * @type {method} - É a primeira parte do nome do escopo a ser utilizado
