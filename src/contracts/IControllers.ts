@@ -1,5 +1,5 @@
-import { method } from '../scopes/scope-types'
-import param from './MethodArgs'
+import param_bodies from './IBodiesArgs'
+import param_body from './IBodyArgs'
 
 /**
  * @type {generic_body} - This type is a generic type that can serve as any class
@@ -11,11 +11,11 @@ export default interface Ctrl<T>{
   /**
   *   @returns lista de registros da tabela de acordo com o método;
   *   @param method - Nome do método a ser utilizado:
-  *   @param model_fab - Array contendo o nome do modelo e o argumento passado ao
-  *   parâmetro do método
+  *   @param method_on - Onde será usado o método
+  *   @param args - Argumento do método
   */
-  getBodies({method, model_fab}: param): body<T[]>;
-  getBody({method, model_fab}: param): body<T>;
+  getBodies({method, on, args}: param_bodies): body<T[]>;
+  getBody({method='find_by_', on, args}: param_body): body<T>;
 }
 
-export {method, param};
+export { param_bodies, param_body };

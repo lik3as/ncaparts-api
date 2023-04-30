@@ -1,11 +1,20 @@
-import { join } from './scope-types'
+import { join, find, find_join} from './scope-types'
 import { Produto, Tipo, Subtipo, Marca, Modelo, Mercadoria} from '../models/index'
 import { Op, Sequelize} from 'sequelize'
 
 export default () => {
   const sequelize: Sequelize = new Sequelize();
   return{
-    join_in_prod(is_final_prod: boolean): join {
+    find_by_id(id: number): join{
+      return{
+        where: {
+          id: {
+            [Op.eq]: id
+          }
+        }
+      }
+    },
+    join_in_prod(is_final_prod: boolean): find_join {
       return {
         include: {
           model: Produto,
@@ -18,7 +27,7 @@ export default () => {
         }
       }
     },
-    join_in_tipo(fk_tipo: number): join {
+    join_in_tipo(fk_tipo: number): find_join {
       return {
         include: {
           model: Tipo,
@@ -31,7 +40,7 @@ export default () => {
         }
       }
     },
-    join_in_subtipo(fk_subtipo: number): join {
+    join_in_subtipo(fk_subtipo: number): find_join {
       return {
         include: {
           model: Subtipo,
@@ -44,7 +53,7 @@ export default () => {
         }
       }
     },
-    join_in_marca(fk_marca: number): join {
+    join_in_marca(fk_marca: number): find_join {
       return {
         include: {
           model: Marca,
@@ -57,7 +66,7 @@ export default () => {
         }
       }
     },
-    join_in_modelo(fk_modelo: number): join {
+    join_in_modelo(fk_modelo: number): find_join {
       return {
         include: {
           model: Modelo,
@@ -70,21 +79,19 @@ export default () => {
         }
       }
     },
-    join_in_merc(fk_merc: number): join {
+    join_in_merc(fk_merc: number): find_join {
       return {
         include: {
           model: Mercadoria,
           required: true,
           where: {
-            id_merc: {
-              [Op.like]: fk_merc
-            }
+            id_merc: { [Op.like]: fk_merc }
           }
         }
       }
     },
     join_in_categories(nome_tipo: number, nome_subtipo: number,
-      nome_marca: number, nome_modelo: string): join {
+      nome_marca: number, nome_modelo: string): find_join {
         return {
           include: [{
             model: Tipo,

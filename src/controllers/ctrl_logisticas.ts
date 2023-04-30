@@ -3,10 +3,10 @@ import { Logistica } from '../models/index'
 
 export default class LogiCtrl implements ICtrl<Logistica> {
   
-  getBodies({method, model_fab}: param): body<Logistica[]>{
+  getBodies({method, on, args }: param): body<Logistica[]>{
     throw new Error('Uninplemented error');
   }
-  getBody({method, model_fab}: param): body<Logistica>{
+  getBody({method, on, args }: param): body<Logistica>{
     throw new Error('Uninplemented error');
   }
 
