@@ -10,14 +10,9 @@ export declare type ScopesOptionsGetter = () => {
 export declare function Scopes(scopesGetter: ScopesOptionsGetter): Function;
 
 
-export type rel_prod = ['prod' | 'merc'];
-export type rel_prodFab = ['fab' | 'prod'];
-export type rel_prod_categories = ['tipo' | 'subtipo' | 'marca' | 'modelo', string | undefined];
-export type rel_fab = ['prod', number | undefined];
-export type rel_merc = 'prod' | 'kit';
-export type rel_logi = 'merc'
-export type rel_kit = 'prod'
-export type rel_cliente = 'venda'
+export type method_specific = 'prod' | 'fab' | 'logi' | 'tipo' | 'subtipo' |
+'marca' | 'modelo' | 'merc' | 'categories';
+export type method_specific_key = | 'id' | 'name'
 
 /**
  * @type {method} - É a primeira parte do nome do escopo a ser utilizado
@@ -26,9 +21,16 @@ export type rel_cliente = 'venda'
  * 
  */
 
-export type method = 'join_in_' | 'find_by_id';
+export type method_general = 'join_in_' | 'find_by_';
 
 //The specific type for the inner join scope
 export type join = IncludeOptions | undefined | Includeable[] | Includeable | ModelOptions<any> 
+| Literal
+
+export type find_join = IncludeOptions | undefined | Includeable[] | Includeable | ModelOptions<any> 
 | FindOptions | Literal
+
+export type find = undefined | ModelOptions<any> 
+| Literal | FindOptions
+
 
