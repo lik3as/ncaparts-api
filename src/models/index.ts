@@ -6,9 +6,7 @@ class Database{
   private connection: Sequelize;
 
   constructor() {
-    this.connect();
-    this.sync();
-  }
+    this.connect(); this.sync(); }
 
   private connect(): void{
     try{
@@ -48,3 +46,4 @@ export {ProdKit} from './prod_kit'
 export {Produto} from './produto'
 export {Subtipo} from './subtipo'
 export {Tipo} from './tipo'
+export {Versao} from './versao'
