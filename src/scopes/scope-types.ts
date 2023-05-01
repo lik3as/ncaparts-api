@@ -11,7 +11,7 @@ export declare function Scopes(scopesGetter: ScopesOptionsGetter): Function;
 
 
 export type method_specific = 'prod' | 'fab' | 'logi' | 'tipo' | 'subtipo' |
-'marca' | 'modelo' | 'merc' | 'categories';
+'marca' | 'modelo' | 'merc' | 'categories' | 'versao';
 export type method_specific_key =  'id' | 'name'
 
 /**

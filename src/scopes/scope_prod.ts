@@ -1,5 +1,5 @@
 import { join, find, find_join} from './scope-types'
-import { Produto, Tipo, Subtipo, Marca, Modelo, Mercadoria} from '../models/index'
+import { Produto, Tipo, Subtipo, Marca, Modelo, Mercadoria, Versao} from '../models/index'
 import { Op, Sequelize} from 'sequelize'
 
 export default () => {
@@ -34,7 +34,7 @@ export default () => {
           required: true,
           where: {
             id_tipo: {
-              [Op.like]: fk_tipo
+              [Op.eq]: fk_tipo
             }
           }
         }
@@ -47,7 +47,7 @@ export default () => {
           required: true,
           where: {
             id_subtitpo: {
-              [Op.like]: fk_subtipo
+              [Op.eq]: fk_subtipo
             }
           }
         }
@@ -60,7 +60,7 @@ export default () => {
           required: true,
           where: {
             id_marca: {
-              [Op.like]: fk_marca
+              [Op.eq]: fk_marca
             }
           }
         }
@@ -73,7 +73,7 @@ export default () => {
           required: true,
           where: {
             id_modelo: {
-              [Op.like]: fk_modelo
+              [Op.eq]: fk_modelo
             }
           }
         }
@@ -85,13 +85,24 @@ export default () => {
           model: Mercadoria,
           required: true,
           where: {
-            id_merc: { [Op.like]: fk_merc }
+            id_merc: { [Op.eq]: fk_merc }
           }
         }
       }
     },
-    join_in_categories(nome_tipo: number, nome_subtipo: number,
-      nome_marca: number, nome_modelo: string): find_join {
+    join_in_versao(fk_vers: number): find_join {
+      return {
+        include: {
+          model: Versao,
+          required: true,
+          where: {
+            id_vers: { [Op.eq]: fk_vers }
+          }
+        }
+      }
+    },
+    join_in_categories(nome_tipo: string, nome_subtipo: string,
+      nome_marca: string, nome_modelo: string): find_join {
         return {
           include: [{
             model: Tipo,
