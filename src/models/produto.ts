@@ -109,6 +109,9 @@ export class Produto extends Model{
   @HasOne(() => Modelo)
   modelo: Modelo;
 
+  @ForeignKey(() => Versao)
+  modelo: Versao;
+
   /*
   *   OneToMany Other Associations
   */

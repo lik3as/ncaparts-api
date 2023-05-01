@@ -15,9 +15,9 @@ export class Tipo extends Model{
   @Column
   id: number;
 
-  @Column
-  nome: string;
-
   @HasMany(()=> Produto)
   produtos: Produto[];
+
+  @Column
+  nome: string;
 }
