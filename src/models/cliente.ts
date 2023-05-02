@@ -7,14 +7,6 @@ import {
   AutoIncrement,
 } from 'sequelize-typescript';
 
-export type body_cliente = {
-  id: number,
-  nome: string,
-  contato: string,
-  email: string,
-  revendedor: boolean
-
-}
 
 @Table
 export class Cliente extends Model{

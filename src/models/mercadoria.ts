@@ -16,17 +16,6 @@ import {
   Scopes
 } from 'sequelize-typescript'
 
-export type body_merc = {
-  id: number,
-  id_prod: number,
-  id_kit: number,
-  sku: string,
-  importado: boolean,
-  v_real: number,
-  v_real_revenda: number,
-  v_dolar: number
-}
-
 
 @Table
 export class Mercadoria extends Model{

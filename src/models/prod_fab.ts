@@ -10,11 +10,6 @@ import {
   Scopes
 } from 'sequelize-typescript'
 
-export type body_prodFab = {
-  id: number,
-  id_prod: number,
-  id_fab: number
-}
 
 @Table
 export class ProdFab extends Model{
