@@ -1,10 +1,10 @@
 ## NCA parts REST application
-### Installation 📥
+### 📥 Installation 
 ```
 git clone https://github.com/lik3as/ncaparts-rest
 cd ncaparts-rest
 ```
-### Instalar Dependências 🔗
+### 🔗 Instalar Dependências 
 - Necessário ```sequelize@6```
 ```
 npm install sequelize-typescript typescript express sequelize pg pg-hstore dotenv
@@ -13,7 +13,7 @@ npm install --save-dev @types/node @types/express
 ### Variáveis de ambiente
 - A aplicação utiliza o pacote ```dotenv``` para a segurança dos dados.
 - Para o uso correto, defina as variáveis corretamente neste arquivo .env
-### Uso 🚀
+### 🚀 Uso 
 #### Adicionar uma nova entidade
 1. Modele no arquivo disponibilizado pelo criador do repositório
 2. Defina a entidade como tabela no diretório ```models/```
