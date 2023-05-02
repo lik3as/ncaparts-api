@@ -10,6 +10,7 @@ import {
   ProdKit,
   Kit,
   Mercadoria,
+  Versao
 } from './index'
 
 import {
@@ -33,21 +34,6 @@ import {
     * Samsung -> Marca
     * S10 -> Modelo
 */
-
-export type body_prod = {
-  id: number,
-  id_prod: number,
-  id_tipo: number,
-  id_subtipo: number,
-  id_marca: number,
-  id_modelo: number,
-  id_merc: number,
-  sku: string,
-  final: boolean,
-  desc: string
-}
-
-
 
 @Scopes(scope_prod)
 
@@ -109,9 +95,13 @@ export class Produto extends Model{
   @HasOne(() => Modelo)
   modelo: Modelo;
 
-  @ForeignKey(() => Versao)
-  modelo: Versao;
 
+  @ForeignKey(() => Versao)
+  @Column
+  id_versao: number;
+
+  @HasOne(() => Versao)
+  versao: Versao;
   /*
   *   OneToMany Other Associations
   */

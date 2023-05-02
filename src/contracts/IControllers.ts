@@ -1,5 +1,5 @@
-import param_bodies from './IBodiesArgs'
-import param_body from './IBodyArgs'
+import param_bodies from './args/IBodiesArgs'
+import param_body from './args/IBodyArgs'
 
 /**
  * @type {generic_body} - This type is a generic type that can serve as any class

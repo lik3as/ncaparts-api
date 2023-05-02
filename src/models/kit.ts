@@ -15,16 +15,6 @@ export type body_kit = {
 }
 export type scope_kit = 'join_in_prod'
 
-
-@Scopes(() => ({
-  join_in_prod: {
-    include: [{
-      model: ProdKit,
-      required: true
-    }]
-  }
-}))
-
 @Table
 export class Kit extends Model{
   @AutoIncrement

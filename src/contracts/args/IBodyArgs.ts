@@ -1,7 +1,7 @@
 import {
   method_specific_key,
   method_general,
-} from "../scopes/scope-types";
+} from "../../scopes/scope-types";
 
 export default interface MethodArgs{
   method: method_general;
