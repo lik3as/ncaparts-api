@@ -9,8 +9,9 @@ import {
 } from 'sequelize-typescript'
 import { Produto } from './produto'
 
+
 @Table
-export default class Versao extends Model{
+export class Versao extends Model{
   @PrimaryKey
   @AutoIncrement
   @Column

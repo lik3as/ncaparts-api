@@ -9,13 +9,6 @@ import {
 } from 'sequelize-typescript'
 import {Produto} from './index';
 
-export type body_modelo = {
-  id: number,
-  nome: string
-}
-export type scope_modelo = 'join_in_prod'
-
-}))
 
 @Table
 export class Modelo extends Model{

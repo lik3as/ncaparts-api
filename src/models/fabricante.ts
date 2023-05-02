@@ -14,14 +14,6 @@ import {
   BelongsToMany,
 } from 'sequelize-typescript'
 
-export type body_fab = {
-  id: number
-  nome: string,
-  cnpj: string,
-  contato: string,
-  local:string,
-  email:string,
-}
 
 @Scopes(scope_fab)
 
@@ -50,5 +42,3 @@ export class Fabricante extends Model{
   @BelongsToMany(() => Produto, () => ProdFab, 'id_fab', 'id_prod')
   produtos: Produto[]
 }
-
-Fabricante.getAttributes()

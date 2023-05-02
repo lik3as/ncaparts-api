@@ -11,14 +11,6 @@ import {
 } from 'sequelize-typescript'
 import { Mercadoria } from './mercadoria';
 
-export type body_logi = {
-  id: number,
-  rastreio: string,
-  vol_liq: number,
-  vol_brt: number,
-  c_real: number,
-  c_dolar: number
-}
 
 @Table
 export class Logistica extends Model{

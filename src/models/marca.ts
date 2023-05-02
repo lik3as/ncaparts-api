@@ -8,11 +8,6 @@ import {
   HasMany
 } from 'sequelize-typescript'
 
-export type body_marca = {
-  id: number,
-  nome: string,
-}
-
 @Table
 export class Marca extends Model{
   @PrimaryKey
