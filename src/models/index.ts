@@ -1,49 +1,61 @@
-import { FindOptions, IncludeOptions, Includeable, ModelOptions } from 'sequelize';
 import {Sequelize} from 'sequelize-typescript';
 import prod_db from '../config/config';
+import { Cliente } from './cliente';
+import { Venda } from './venda';
+import { Fabricante } from './fabricante';
+import { Kit } from './kit';
+import { Logistica } from './logistica';
+import { Marca } from './marca';
+import { Mercadoria } from './mercadoria';
+import { Modelo } from './modelo';
+import { ProdFab } from './prod_fab';
+import { ProdKit } from './prod_kit';
+import { Produto } from './produto';
+import { Subtipo } from './subtipo';
+import { Versao } from './versao';
+import { Tipo } from './tipo';
+
 
 class Database{
-  private connection: Sequelize;
+  public sequelize: Sequelize;
 
   constructor() {
-    this.connect(); this.sync(); }
+    this.connect();
+    this.sequelize.authenticate().then(() => {
+      console.log('Conectado com sucesso!')
+    }).catch(err => {
+      console.log(err)
+    });
+  }
 
   private connect(): void{
     try{
-      this.connection = new Sequelize(prod_db.production as Object);
+      this.sequelize = new Sequelize(prod_db.production.database, prod_db.production.username,  prod_db.production.password, {
+        host: prod_db.production.host,
+        dialect: prod_db.production.dialect,
+        port: prod_db.production.port as number,
+        logging: false
+      });
     } catch (e){
       console.log(e);
-    } finally{
-      this.connection.close();
-    }
+    } 
 
   }
 
-  public sync(): void{
-    this.connection.sync({force: true});
-  }
 }
 
 const db: Database = new Database();
 
-export default db;
+db.sequelize.addModels([
+  Cliente, Venda, Fabricante, Kit, Logistica, Marca, Mercadoria, Modelo,
+  ProdFab, ProdKit, Produto, Subtipo, Versao, Tipo 
+]);
 
-/*
-*   Declaring Scopes and it dependencies again for changing the
-*   return options to the newly created type 'scope'
-*/
 
-export {Cliente} from './cliente'
-export {Venda} from './venda'
-export {Fabricante} from './fabricante'
-export {Kit} from './kit'
-export {Logistica} from './logistica'
-export {Marca} from './marca'
-export {Mercadoria} from './mercadoria'
-export {Modelo} from './modelo'
-export {ProdFab} from './prod_fab'
-export {ProdKit} from './prod_kit'
-export {Produto} from './produto'
-export {Subtipo} from './subtipo'
-export {Tipo} from './tipo'
-export {Versao} from './versao'
+db.sequelize.sync({force: false});
+export default db.sequelize;
+
+export {
+  Cliente, Venda, Fabricante, Logistica, Marca, Mercadoria, Modelo,
+  ProdFab, ProdKit, Produto, Subtipo, Versao, Tipo, Kit
+}

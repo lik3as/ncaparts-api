@@ -9,8 +9,6 @@ import {
   Scopes
 } from 'sequelize-typescript'
 
-@Scopes(() => ({
-}))
 
 @Table
 export class ProdKit extends Model{

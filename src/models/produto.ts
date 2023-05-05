@@ -1,4 +1,4 @@
-import {Scopes, prod_scopes} from '../scopes/scopes'
+import { prod_scopes } from '../scopes/scopes'
 
 import {
   Marca,
@@ -24,6 +24,7 @@ import {
   ForeignKey,
   HasOne,
   BelongsTo,
+  Scopes
 } from 'sequelize-typescript'
 
 /*
@@ -67,48 +68,25 @@ export class Produto extends Model{
   @Column
   id_tipo: number;
 
-
-  @HasOne(() => Tipo)
-  tipo: Tipo;
-
-
   @ForeignKey(() => Subtipo)
   @Column
   id_subtipo: number;
   
-  @HasOne(() => Subtipo)
-  subtipo: Subtipo
-
-
   @ForeignKey(() => Marca)
   @Column
   id_marca: number;
-
-  @HasOne(() => Marca)
-  marca: Marca;
-
 
   @ForeignKey(() => Modelo)
   @Column
   id_modelo: number;
 
-  @HasOne(() => Modelo)
-  modelo: Modelo;
-
-
   @ForeignKey(() => Versao)
   @Column
   id_versao: number;
 
-  @HasOne(() => Versao)
-  versao: Versao;
   /*
   *   OneToMany Other Associations
   */
-
-  @ForeignKey(() => Mercadoria)
-  @Column
-  id_merc: number;
 
   @HasMany(() => Mercadoria)
   mercadorias: Mercadoria[];

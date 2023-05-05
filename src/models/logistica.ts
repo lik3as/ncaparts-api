@@ -19,8 +19,9 @@ export class Logistica extends Model{
   @Column
   id: number;
 
-  @HasOne(() => Mercadoria)
-  mercadoria: Mercadoria
+  @ForeignKey(() => Mercadoria)
+  @Column
+  id_merc: number;
 
   @Column
   rastreio: string
