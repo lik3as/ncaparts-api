@@ -1,4 +1,4 @@
-import { ProdKit, Produto } from './index';
+import { Mercadoria, ProdKit, Produto } from './index';
 import {
   Table,
   Model,
@@ -6,7 +6,8 @@ import {
   PrimaryKey,
   AutoIncrement,
   BelongsToMany,
-  Scopes
+  Scopes,
+  HasMany
 } from 'sequelize-typescript'
 
 export type body_kit = {
@@ -24,6 +25,9 @@ export class Kit extends Model{
   
   @Column
   apelido: string;
+
+  @HasMany(() => Mercadoria)
+  mercadorias: Mercadoria[];
 
   @BelongsToMany(() => Produto, () => ProdKit)
   produtos: Produto[];

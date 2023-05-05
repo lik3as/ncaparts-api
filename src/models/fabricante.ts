@@ -1,4 +1,4 @@
-import {Scopes, fab_scopes} from '../scopes/scopes'
+import { fab_scopes} from '../scopes/scopes'
 
 import {
   ProdFab,
@@ -12,6 +12,7 @@ import {
   PrimaryKey,
   AutoIncrement,
   BelongsToMany,
+  Scopes
 } from 'sequelize-typescript'
 
 

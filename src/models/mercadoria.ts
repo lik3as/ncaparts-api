@@ -1,6 +1,7 @@
 import {
   Produto,
-  Kit
+  Kit,
+  Logistica
 } from './index'
 
 import {
@@ -33,11 +34,8 @@ export class Mercadoria extends Model{
   id_kit: number;
 
 
-  @HasOne(() => Produto)
-  produto: Produto;
-
-  @HasOne(() => Kit)
-  kit: Kit;
+  @HasMany(() => Logistica)
+  logisticas: Logistica[];
 
   @Column
   sku: string;
