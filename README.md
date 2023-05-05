@@ -19,7 +19,7 @@ npm install --save-dev @types/node @types/express
 2. Defina a entidade como tabela no diretório ```models/```
 3. Exporte ela direto do arquivo ```models/index.ts```
 
-### Controller para o seu novo Model
+#### Controller para o seu novo Model
 1. Crie um novo arquivo de escopo na pasta ```scopes/```
 2. Adicione nele os seus métodos de escopos, nomeando seguindo o padrão indicado no arquivo ```scopes/scope-types.ts```
 3. Adicione o nome do seu model ao tipo ```method_specific```
