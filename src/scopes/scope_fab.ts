@@ -1,10 +1,10 @@
-import {join, find} from './scope-types'
+import {join, find, ScopesOptionsGetter} from './scope-types'
 import {ProdFab} from '../models/index'
 import {Sequelize, Op} from 'sequelize'
 
-export default () => {
-  const sequelize: Sequelize = new Sequelize();
-  return {
+const sequelize: Sequelize = new Sequelize();
+
+export const fab_scopes: ScopesOptionsGetter = () => ({ 
     find_by_id(id: number): find{
       return{
         where: {
@@ -31,6 +31,5 @@ export default () => {
           }
         }]
       }
-    }
-  }
-}
+    } 
+})

@@ -10,7 +10,7 @@ class Database{
 
   private connect(): void{
     try{
-      this.connection = new Sequelize(prod_db as Object);
+      this.connection = new Sequelize(prod_db.production as Object);
     } catch (e){
       console.log(e);
     } finally{

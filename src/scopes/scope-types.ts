@@ -2,7 +2,7 @@ import { FindOptions, IncludeOptions, Includeable, ModelOptions } from "sequeliz
 import { Literal } from "sequelize/types/utils";
 
 
-declare type ScopesOptions = join | ((...args: any[]) => join);
+declare type ScopesOptions = find | find_join | join | ((...args: any[]) => join | find_join | find);
 export declare type ScopesOptionsGetter = () => {
     [sopeName: string]: ScopesOptions;
 };
@@ -31,6 +31,6 @@ export type find_join = IncludeOptions | undefined | Includeable[] | Includeable
 | FindOptions | Literal
 
 export type find = undefined | ModelOptions<any> 
-| Literal | FindOptions
+| Literal | FindOptions | any | void
 
 
