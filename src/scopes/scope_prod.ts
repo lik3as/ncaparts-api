@@ -1,8 +1,9 @@
 import { join, find, find_join, ScopesOptionsGetter} from './scope-types'
+import db from '../models/index'
 import { Produto, Tipo, Subtipo, Marca, Modelo, Mercadoria, Versao} from '../models/index'
-import { Op, Sequelize} from 'sequelize'
+import { Op } from 'sequelize'
 
-const sequelize: Sequelize = new Sequelize()
+const sequelize = db;
 export const prod_scopes: ScopesOptionsGetter = () => (
   {
     find_by_id(id: number): join{
