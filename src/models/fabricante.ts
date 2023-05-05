@@ -1,4 +1,4 @@
-import {Scopes, scope_fab} from '../scopes/scopes'
+import {Scopes, fab_scopes} from '../scopes/scopes'
 
 import {
   ProdFab,
@@ -15,7 +15,7 @@ import {
 } from 'sequelize-typescript'
 
 
-@Scopes(scope_fab)
+@Scopes(fab_scopes)
 
 @Table
 export class Fabricante extends Model{

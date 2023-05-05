@@ -6,5 +6,5 @@ export {Scopes} from './scope-types'
 *   scope. Caso seja necessário fazer uma pesquisa com mais
 *   de um subquery, apenas utilize os finders.
 */
-export {default as scope_prod} from './scope_prod'
-export {default as scope_fab} from './scope_fab'
+export {prod_scopes} from './scope_prod'
+export {fab_scopes} from './scope_fab'

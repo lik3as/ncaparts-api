@@ -1,4 +1,4 @@
-import {Scopes, scope_prod} from '../scopes/scopes'
+import {Scopes, prod_scopes} from '../scopes/scopes'
 
 import {
   Marca,
@@ -35,7 +35,7 @@ import {
     * S10 -> Modelo
 */
 
-@Scopes(scope_prod)
+@Scopes(prod_scopes)
 
 /*
 *   Categories are:
