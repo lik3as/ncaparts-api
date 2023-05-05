@@ -1,12 +1,16 @@
-const fs = require('fs');
+import { Dialect } from "sequelize";
+import dotenv from 'dotenv'
+dotenv.config({path: '../.env'})
 
-export default {
+const config = {
   production: {
-    username: process.env.PROD_DB_USERNAME,
-    password: process.env.PROD_DB_PASSWORD,
-    database: process.env.PROD_DB_NAME,
-    host: process.env.PROD_DB_HOSTNAME,
-    port: process.env.PROD_DB_PORT,
-    dialect: 'postgres',
+    username: process.env.DB_PROD_USERNAME as string, 
+    password: process.env.DB_PROD_PASSWORD as string,
+    database: process.env.DB_PROD_DATABASE as string,
+    host: process.env.DB_PROD_HOSTNAME as string,
+    port: process.env.DB_PROD_PORT as unknown,
+    dialect: 'postgres' as Dialect,
   }
 };
+
+export default config;
