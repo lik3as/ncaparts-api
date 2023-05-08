@@ -29,11 +29,11 @@ export default class ClienteCtrl implements IFab<Cliente>{
       order: [
         sequelize.fn('concat', sequelize.col('nome'))
       ]
-    })
+    });
   }
 
   public async create(body: {}): Promise<void> {
-    await Cliente.create(body)
+    await Cliente.create(body);
   }
 
 }

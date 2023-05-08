@@ -1,7 +1,6 @@
-import { Produto } from "../models/index";
-import sequelize from '../models/index'
+import sequelize, { Produto, Tipo, Subtipo, Marca, Modelo, Versao } from "../models/index";
 import IFab, {param_body, param_bodies, body} from '../contracts/IServices'
-
+type categorias = Tipo[] | Subtipo[] | Marca[] | Modelo[] | Versao[]
 
 export default class ProdutoCtrl implements IFab<Produto>{
   constructor(){ }
@@ -34,6 +33,44 @@ export default class ProdutoCtrl implements IFab<Produto>{
       }
     )
   }
-}
 
-const fabri: ProdutoCtrl = new ProdutoCtrl()
+  public async createCategoria(categoria: string | undefined, body: {}): Promise<void>{
+    switch(categoria){
+      case('Tipo'):
+        await Tipo.create(body);
+        break;
+      case('Subtipo'):
+        await Subtipo.create(body);
+        break;
+      case('Marca'):
+        await Marca.create(body);
+        break;
+      case('Modelo'):
+        await Modelo.create(body);
+        break;
+      case('Versao'):
+        await Versao.create(body);
+        break;
+      default: 
+        await Tipo.create(body);
+        break;
+    }
+  }
+
+  public async getCategorias(categoria: string): Promise<categorias> {
+    switch(categoria){
+      case('Tipo'):
+        return await Tipo.findAll();
+      case('Subtipo'):
+        return await Subtipo.findAll();
+      case('Marca'):
+        return await Marca.findAll();
+      case('Modelo'):
+        return await Modelo.findAll();
+      case('Versao'):
+        return await Versao.findAll();
+      default:
+        return await Tipo.findAll();
+    }
+  }
+}
