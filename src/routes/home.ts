@@ -1,1 +1,0 @@
-import ProdutoCtrl from "../controllers/ctrl_produtos";
