@@ -33,6 +33,10 @@ __decorate([
 ], Cliente.prototype, "email", void 0);
 __decorate([
     sequelize_typescript_1.Column,
+    __metadata("design:type", Number)
+], Cliente.prototype, "senha", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
     __metadata("design:type", Boolean)
 ], Cliente.prototype, "revendedor", void 0);
 Cliente = __decorate([

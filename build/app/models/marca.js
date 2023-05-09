@@ -21,6 +21,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Marca.prototype, "id", void 0);
 __decorate([
+    sequelize_typescript_1.Unique,
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
 ], Marca.prototype, "nome", void 0);
