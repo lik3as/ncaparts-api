@@ -6,7 +6,8 @@ import {
   PrimaryKey,
   ForeignKey,
   AutoIncrement,
-  HasMany
+  HasMany,
+  Unique
 } from 'sequelize-typescript'
 
 @Table
@@ -19,6 +20,7 @@ export class Subtipo extends Model{
   @HasMany(() => Produto)
   produtos: Produto[]
 
+  @Unique
   @Column
   nome: string;
 

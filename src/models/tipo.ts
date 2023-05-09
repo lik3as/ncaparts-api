@@ -4,7 +4,8 @@ import {
   Column,
   PrimaryKey,
   AutoIncrement,
-  HasMany
+  HasMany,
+  Unique
 } from 'sequelize-typescript'
 import {Produto} from './produto';
 
@@ -18,6 +19,7 @@ export class Tipo extends Model{
   @HasMany(()=> Produto)
   produtos: Produto[];
 
+  @Unique
   @Column
   nome: string;
 }

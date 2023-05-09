@@ -6,6 +6,7 @@ import {
   Table,
   PrimaryKey,
   AutoIncrement,
+  Unique,
 } from 'sequelize-typescript'
 import { Produto } from './produto'
 
@@ -20,6 +21,7 @@ export class Versao extends Model{
   @HasMany(() => Produto)
   produtos: Produto[]
 
+  @Unique
   @Column
   nome: string
 }

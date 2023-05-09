@@ -5,7 +5,8 @@ import {
   PrimaryKey,
   AutoIncrement,
   HasMany,
-  Scopes
+  Scopes,
+  Unique
 } from 'sequelize-typescript'
 import {Produto} from './index';
 
@@ -17,6 +18,7 @@ export class Modelo extends Model{
   @Column
   id: number;
 
+  @Unique
   @Column
   nome: string
 

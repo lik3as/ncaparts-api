@@ -25,5 +25,8 @@ export class Cliente extends Model{
   email: string;
 
   @Column
+  senha: number;
+
+  @Column
   revendedor: boolean;
 };
