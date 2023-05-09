@@ -22,7 +22,7 @@ export const prod_scopes: ScopesOptionsGetter = () => (
           required: true,
           where: {
             final: {
-              [Op.eq]: true
+              [Op.eq]: is_final_prod
             }
           }
         }
