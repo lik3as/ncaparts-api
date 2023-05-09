@@ -1,16 +1,7 @@
-import express from 'express'
-import infos from './middleware/info'
-import router_prod from './routes/router.prod';
-import router_cli from './routes/router.cli';
-
-const app: express.Application = express()
-
-app.use(express.json());
-app.use(infos);
-
-app.use(router_prod);
-app.use(router_cli);
-
-app.listen(8080, () => {
-  console.log('\x1b[35mServer is Listening!\x1b[0m\n');
-});
+export {default as Client} from './services/srv.cli'
+export {default as Fab} from './services/srv.fab'
+export {default as Kit} from './services/srv.kit'
+export {default as Logi} from './services/srv.logi'
+export {default as Merc} from './services/srv.merc'
+export {default as Prod} from './services/srv.prod'
+export {default as Ven} from './services/srv.ven'
