@@ -2,7 +2,7 @@ import { Dialect } from "sequelize";
 import path from "path";
 import dotenv from 'dotenv'
 
-const nowpath =  path.resolve(__dirname,  '..',  '.env');
+const nowpath =  path.resolve(__dirname,  '..', '..', '..', 'src', '.env');
 console.log(nowpath)
 
 dotenv.config({path: nowpath})
