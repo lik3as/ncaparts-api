@@ -38,7 +38,7 @@ class Database {
     constructor() {
         this.connect();
         this.sequelize.authenticate().then(() => {
-            console.log('Conectado com sucesso!');
+            console.log('\n\x1b[35mDatabase was connected with Success!\x1b[0m');
         }).catch(err => {
             console.log(err);
         });
@@ -50,7 +50,7 @@ class Database {
                 dialect: config_1.default.production.dialect,
                 port: config_1.default.production.port,
                 logging: sql => {
-                    console.log(sql);
+                    console.log(`SQL: \x1b[33m ${sql} \x1b[0m`);
                 }
             });
         }

@@ -25,6 +25,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Subtipo.prototype, "produtos", void 0);
 __decorate([
+    sequelize_typescript_1.Unique,
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
 ], Subtipo.prototype, "nome", void 0);
