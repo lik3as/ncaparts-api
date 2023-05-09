@@ -4,12 +4,13 @@
     "express": "^4.18.2",
     "pg": "^8.10.0",
     "pg-hstore": "^2.3.4",
+    "prompt-sync": "^4.2.0",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.31.0",
     "sequelize-typescript": "^2.1.5",
     "typescript": "^5.0.4"
   },
-  "name": "ncaparts-rest",
+  "name": "@nca/parts",
   "description": "��#\u0000#\u0000#\u0000 \u0000N\u0000C\u0000A\u0000P\u0000A\u0000R\u0000T\u0000S\u0000 \u0000w\u0000e\u0000b\u0000s\u0000i\u0000t\u0000e\u0000 \u0000R\u0000e\u0000s\u0000t\u0000-\u0000A\u0000P\u0000I\u0000 \u0000N\u0000o\u0000d\u0000e\u0000J\u0000S\u0000 \u0000B\u0000a\u0000c\u0000k\u0000e\u0000n\u0000d\u0000\r\u0000 \u0000",
   "version": "1.0.0",
   "main": "index.js",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/node": "^18.16.0",
+    "@types/prompt-sync": "^4.2.0",
     "@types/validator": "^13.7.15"
   }
 }

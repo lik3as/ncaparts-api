@@ -1,13 +1,13 @@
-import { join, find, find_join, ScopesOptionsGetter} from './scope-types'
+import { join, find, find_join, ScopesOptionsGetter } from './scope-types'
 import db from '../models/index'
-import { Produto, Tipo, Subtipo, Marca, Modelo, Mercadoria, Versao} from '../models/index'
+import { Produto, Tipo, Subtipo, Marca, Modelo, Mercadoria, Versao } from '../models/index'
 import { Op } from 'sequelize'
 
 const sequelize = db;
 export const prod_scopes: ScopesOptionsGetter = () => (
   {
-    find_by_id(id: number): join{
-      return{
+    find_by_id(id: number): join {
+      return {
         where: {
           id: {
             [Op.eq]: id
@@ -104,53 +104,53 @@ export const prod_scopes: ScopesOptionsGetter = () => (
     },
     join_in_categories(nome_tipo: string, nome_subtipo: string,
       nome_marca: string, nome_modelo: string): find_join {
-        return {
-          include: [{
-            model: Tipo,
-            required: true,
-            where: {
-              id_tipo: {
-                [Op.eq]: sequelize.literal(
-                  `SELECT id FROM Tipo ` +
-                  `WHERE nome = ${nome_tipo};`
-                  )
-              }
+      return {
+        include: [{
+          model: Tipo,
+          required: true,
+          where: {
+            id_tipo: {
+              [Op.eq]: sequelize.literal(
+                `SELECT id FROM Tipo ` +
+                `WHERE nome = ${nome_tipo};`
+              )
             }
-          }, {
-            model: Subtipo,
-            required: true,
-            where: {
-              id_subtipo: {
-                [Op.eq]: sequelize.literal(
-                  `SELECT id FROM Subtipo ` +
-                  `WHERE nome = ${nome_subtipo};`
-                )
-              }
+          }
+        }, {
+          model: Subtipo,
+          required: true,
+          where: {
+            id_subtipo: {
+              [Op.eq]: sequelize.literal(
+                `SELECT id FROM Subtipo ` +
+                `WHERE nome = ${nome_subtipo};`
+              )
             }
-          }, {
-            model: Marca,
-            required: true,
-            where: {
-              id_marca: {
-                [Op.eq]: sequelize.literal(
-                  `SELECT id FROM Marca ` +
-                  `WHERE nome = ${nome_marca};`
-                )
-              }
+          }
+        }, {
+          model: Marca,
+          required: true,
+          where: {
+            id_marca: {
+              [Op.eq]: sequelize.literal(
+                `SELECT id FROM Marca ` +
+                `WHERE nome = ${nome_marca};`
+              )
             }
-          }, {
-            model: Modelo,
-            required: true,
-            where: {
-              id_modelo: {
-                [Op.eq]: sequelize.literal(
-                  `SELECT id FROM Modelo `+
-                  `WHERE nome = ${nome_modelo};`
-                  )
-              }
+          }
+        }, {
+          model: Modelo,
+          required: true,
+          where: {
+            id_modelo: {
+              [Op.eq]: sequelize.literal(
+                `SELECT id FROM Modelo ` +
+                `WHERE nome = ${nome_modelo};`
+              )
             }
-          }]
-        }
+          }
+        }]
       }
+    }
   }
 )
