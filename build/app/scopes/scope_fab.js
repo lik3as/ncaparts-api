@@ -7,7 +7,7 @@ exports.fab_scopes = void 0;
 const index_1 = __importDefault(require("../models/index"));
 const index_2 = require("../models/index");
 const sequelize_1 = require("sequelize");
-const sequelize = index_1.default.sequelize;
+const sequelize = index_1.default;
 const fab_scopes = () => ({
     find_by_id(id) {
         return {

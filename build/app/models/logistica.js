@@ -21,9 +21,10 @@ __decorate([
     __metadata("design:type", Number)
 ], Logistica.prototype, "id", void 0);
 __decorate([
-    (0, sequelize_typescript_1.HasOne)(() => mercadoria_1.Mercadoria),
-    __metadata("design:type", mercadoria_1.Mercadoria)
-], Logistica.prototype, "mercadoria", void 0);
+    (0, sequelize_typescript_1.ForeignKey)(() => mercadoria_1.Mercadoria),
+    sequelize_typescript_1.Column,
+    __metadata("design:type", Number)
+], Logistica.prototype, "id_merc", void 0);
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
