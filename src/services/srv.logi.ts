@@ -25,4 +25,3 @@ export default class LogisticaCtrl implements IFab<Logistica>{
   }
 }
 
-const fabri: LogisticaCtrl = new LogisticaCtrl()

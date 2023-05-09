@@ -25,4 +25,3 @@ export default class MercadoriaCtrl implements IFab<Mercadoria>{
   }
 }
 
-const fabri: MercadoriaCtrl = new MercadoriaCtrl()

@@ -25,4 +25,3 @@ export default class VendaCtrl implements IFab<Venda>{
   }
 }
 
-const fabri: VendaCtrl = new VendaCtrl()
