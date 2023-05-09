@@ -25,4 +25,3 @@ export default class KitCtrl implements IFab<Kit>{
   }
 }
 
-const fabri: KitCtrl = new KitCtrl()
