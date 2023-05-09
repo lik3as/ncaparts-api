@@ -49,50 +49,25 @@ __decorate([
     __metadata("design:type", Number)
 ], Produto.prototype, "id_tipo", void 0);
 __decorate([
-    (0, sequelize_typescript_1.HasOne)(() => index_1.Tipo),
-    __metadata("design:type", index_1.Tipo)
-], Produto.prototype, "tipo", void 0);
-__decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => index_1.Subtipo),
     sequelize_typescript_1.Column,
     __metadata("design:type", Number)
 ], Produto.prototype, "id_subtipo", void 0);
-__decorate([
-    (0, sequelize_typescript_1.HasOne)(() => index_1.Subtipo),
-    __metadata("design:type", index_1.Subtipo)
-], Produto.prototype, "subtipo", void 0);
 __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => index_1.Marca),
     sequelize_typescript_1.Column,
     __metadata("design:type", Number)
 ], Produto.prototype, "id_marca", void 0);
 __decorate([
-    (0, sequelize_typescript_1.HasOne)(() => index_1.Marca),
-    __metadata("design:type", index_1.Marca)
-], Produto.prototype, "marca", void 0);
-__decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => index_1.Modelo),
     sequelize_typescript_1.Column,
     __metadata("design:type", Number)
 ], Produto.prototype, "id_modelo", void 0);
 __decorate([
-    (0, sequelize_typescript_1.HasOne)(() => index_1.Modelo),
-    __metadata("design:type", index_1.Modelo)
-], Produto.prototype, "modelo", void 0);
-__decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => index_1.Versao),
     sequelize_typescript_1.Column,
     __metadata("design:type", Number)
 ], Produto.prototype, "id_versao", void 0);
-__decorate([
-    (0, sequelize_typescript_1.HasOne)(() => index_1.Versao),
-    __metadata("design:type", index_1.Versao)
-], Produto.prototype, "versao", void 0);
-__decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => index_1.Mercadoria),
-    sequelize_typescript_1.Column,
-    __metadata("design:type", Number)
-], Produto.prototype, "id_merc", void 0);
 __decorate([
     (0, sequelize_typescript_1.HasMany)(() => index_1.Mercadoria),
     __metadata("design:type", Array)
@@ -118,7 +93,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Produto.prototype, "kits", void 0);
 Produto = Produto_1 = __decorate([
-    (0, scopes_1.Scopes)(scopes_1.prod_scopes)
+    (0, sequelize_typescript_1.Scopes)(scopes_1.prod_scopes)
     /*
     *   Categories are:
     *   tipo, subtipo, marca and modelo

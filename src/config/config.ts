@@ -1,6 +1,11 @@
 import { Dialect } from "sequelize";
+import path from "path";
 import dotenv from 'dotenv'
-dotenv.config({path: '../.env'})
+
+const nowpath =  path.resolve(__dirname,  '..',  '.env');
+console.log(nowpath)
+
+dotenv.config({path: nowpath})
 
 const config = {
   production: {

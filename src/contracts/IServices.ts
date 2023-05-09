@@ -4,9 +4,10 @@ import param_body from './args/IBodyArgs'
 /**
  * @type {generic_body} - This type is a generic type that can serve as any class
  * attributes
- */
+*/
+
 export type body<T> = Promise<T | null>
-export default interface Ctrl<T>{
+export default interface Service<T>{
 
   /**
   *   @returns lista de registros da tabela de acordo com o método;

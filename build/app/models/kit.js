@@ -25,6 +25,10 @@ __decorate([
     __metadata("design:type", String)
 ], Kit.prototype, "apelido", void 0);
 __decorate([
+    (0, sequelize_typescript_1.HasMany)(() => index_1.Mercadoria),
+    __metadata("design:type", Array)
+], Kit.prototype, "mercadorias", void 0);
+__decorate([
     (0, sequelize_typescript_1.BelongsToMany)(() => index_1.Produto, () => index_1.ProdKit),
     __metadata("design:type", Array)
 ], Kit.prototype, "produtos", void 0);

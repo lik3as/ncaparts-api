@@ -31,13 +31,9 @@ __decorate([
     __metadata("design:type", Number)
 ], Mercadoria.prototype, "id_kit", void 0);
 __decorate([
-    (0, sequelize_typescript_1.HasOne)(() => index_1.Produto),
-    __metadata("design:type", index_1.Produto)
-], Mercadoria.prototype, "produto", void 0);
-__decorate([
-    (0, sequelize_typescript_1.HasOne)(() => index_1.Kit),
-    __metadata("design:type", index_1.Kit)
-], Mercadoria.prototype, "kit", void 0);
+    (0, sequelize_typescript_1.HasMany)(() => index_1.Logistica),
+    __metadata("design:type", Array)
+], Mercadoria.prototype, "logisticas", void 0);
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)

@@ -35,7 +35,6 @@ __decorate([
     __metadata("design:type", Number)
 ], ProdKit.prototype, "id_kit", void 0);
 ProdKit = __decorate([
-    (0, sequelize_typescript_1.Scopes)(() => ({})),
     sequelize_typescript_1.Table
 ], ProdKit);
 exports.ProdKit = ProdKit;

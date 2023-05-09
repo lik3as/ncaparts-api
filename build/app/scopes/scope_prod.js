@@ -7,7 +7,7 @@ exports.prod_scopes = void 0;
 const index_1 = __importDefault(require("../models/index"));
 const index_2 = require("../models/index");
 const sequelize_1 = require("sequelize");
-const sequelize = index_1.default.sequelize;
+const sequelize = index_1.default;
 const prod_scopes = () => ({
     find_by_id(id) {
         return {
@@ -25,7 +25,7 @@ const prod_scopes = () => ({
                 required: true,
                 where: {
                     final: {
-                        [sequelize_1.Op.eq]: true
+                        [sequelize_1.Op.eq]: is_final_prod
                     }
                 }
             }

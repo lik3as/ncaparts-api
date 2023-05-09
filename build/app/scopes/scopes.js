@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fab_scopes = exports.prod_scopes = exports.Scopes = void 0;
-var scope_types_1 = require("./scope-types");
-Object.defineProperty(exports, "Scopes", { enumerable: true, get: function () { return scope_types_1.Scopes; } });
+exports.fab_scopes = exports.prod_scopes = void 0;
 /*
 *   Dentro dos scopes será aplicada até uma subquery por
 *   scope. Caso seja necessário fazer uma pesquisa com mais

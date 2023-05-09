@@ -46,7 +46,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Fabricante.prototype, "produtos", void 0);
 Fabricante = __decorate([
-    (0, scopes_1.Scopes)(scopes_1.fab_scopes),
+    (0, sequelize_typescript_1.Scopes)(scopes_1.fab_scopes),
     sequelize_typescript_1.Table
 ], Fabricante);
 exports.Fabricante = Fabricante;
