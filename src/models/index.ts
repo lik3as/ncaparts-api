@@ -22,7 +22,7 @@ class Database{
   constructor() {
     this.connect();
     this.sequelize.authenticate().then(() => {
-      console.log('Conectado com sucesso!')
+      console.log('\n\x1b[35mDatabase was connected with Success!\x1b[0m')
     }).catch(err => {
       console.log(err)
     });
@@ -34,7 +34,9 @@ class Database{
         host: prod_db.production.host,
         dialect: prod_db.production.dialect,
         port: prod_db.production.port as number,
-        logging: false
+        logging: sql => {
+          console.log(`SQL: \x1b[33m ${sql} \x1b[0m`)
+        }
       });
     } catch (e){
       console.log(e);
@@ -53,6 +55,7 @@ db.sequelize.addModels([
 
 
 db.sequelize.sync({force: false});
+
 export default db.sequelize;
 
 export {

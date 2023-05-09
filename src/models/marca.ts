@@ -5,7 +5,8 @@ import {
   Column,
   PrimaryKey,
   AutoIncrement,
-  HasMany
+  HasMany,
+  Unique
 } from 'sequelize-typescript'
 
 @Table
@@ -15,6 +16,7 @@ export class Marca extends Model{
   @Column
   id: number;
 
+  @Unique
   @Column
   nome: string
 
