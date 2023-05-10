@@ -29,4 +29,3 @@ class VendaCtrl {
     }
 }
 exports.default = VendaCtrl;
-const fabri = new VendaCtrl();

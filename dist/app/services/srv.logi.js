@@ -29,4 +29,3 @@ class LogisticaCtrl {
     }
 }
 exports.default = LogisticaCtrl;
-const fabri = new LogisticaCtrl();
