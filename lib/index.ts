@@ -1,4 +1,4 @@
-export {default as Client} from './services/srv.cli'
+export {default as Cli} from './services/srv.cli'
 export {default as Fab} from './services/srv.fab'
 export {default as Kit} from './services/srv.kit'
 export {default as Logi} from './services/srv.logi'
