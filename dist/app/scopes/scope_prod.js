@@ -1,8 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.prod_scopes = void 0;
-const index_1 = require("../models/index");
+const index_1 = __importDefault(require("../models/index"));
+const index_2 = require("../models/index");
 const sequelize_1 = require("sequelize");
+const sequelize = index_1.default;
 const prod_scopes = () => ({
     find_by_id(id) {
         return {
@@ -16,11 +21,11 @@ const prod_scopes = () => ({
     join_in_prod(is_final_prod) {
         return {
             include: {
-                model: index_1.Produto,
+                model: index_2.Produto,
                 required: true,
                 where: {
                     final: {
-                        [sequelize_1.Op.eq]: true
+                        [sequelize_1.Op.eq]: is_final_prod
                     }
                 }
             }
@@ -29,7 +34,7 @@ const prod_scopes = () => ({
     join_in_tipo(fk_tipo) {
         return {
             include: {
-                model: index_1.Tipo,
+                model: index_2.Tipo,
                 required: true,
                 where: {
                     id_tipo: {
@@ -42,7 +47,7 @@ const prod_scopes = () => ({
     join_in_subtipo(fk_subtipo) {
         return {
             include: {
-                model: index_1.Subtipo,
+                model: index_2.Subtipo,
                 required: true,
                 where: {
                     id_subtitpo: {
@@ -55,7 +60,7 @@ const prod_scopes = () => ({
     join_in_marca(fk_marca) {
         return {
             include: {
-                model: index_1.Marca,
+                model: index_2.Marca,
                 required: true,
                 where: {
                     id_marca: {
@@ -68,7 +73,7 @@ const prod_scopes = () => ({
     join_in_modelo(fk_modelo) {
         return {
             include: {
-                model: index_1.Modelo,
+                model: index_2.Modelo,
                 required: true,
                 where: {
                     id_modelo: {
@@ -81,7 +86,7 @@ const prod_scopes = () => ({
     join_in_merc(fk_merc) {
         return {
             include: {
-                model: index_1.Mercadoria,
+                model: index_2.Mercadoria,
                 required: true,
                 where: {
                     id_merc: { [sequelize_1.Op.eq]: fk_merc }
@@ -92,7 +97,7 @@ const prod_scopes = () => ({
     join_in_versao(fk_vers) {
         return {
             include: {
-                model: index_1.Versao,
+                model: index_2.Versao,
                 required: true,
                 where: {
                     id_vers: { [sequelize_1.Op.eq]: fk_vers }
@@ -103,7 +108,7 @@ const prod_scopes = () => ({
     join_in_categories(nome_tipo, nome_subtipo, nome_marca, nome_modelo) {
         return {
             include: [{
-                    model: index_1.Tipo,
+                    model: index_2.Tipo,
                     required: true,
                     where: {
                         id_tipo: {
@@ -112,7 +117,7 @@ const prod_scopes = () => ({
                         }
                     }
                 }, {
-                    model: index_1.Subtipo,
+                    model: index_2.Subtipo,
                     required: true,
                     where: {
                         id_subtipo: {
@@ -121,7 +126,7 @@ const prod_scopes = () => ({
                         }
                     }
                 }, {
-                    model: index_1.Marca,
+                    model: index_2.Marca,
                     required: true,
                     where: {
                         id_marca: {
@@ -130,7 +135,7 @@ const prod_scopes = () => ({
                         }
                     }
                 }, {
-                    model: index_1.Modelo,
+                    model: index_2.Modelo,
                     required: true,
                     where: {
                         id_modelo: {

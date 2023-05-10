@@ -29,4 +29,3 @@ class MercadoriaCtrl {
     }
 }
 exports.default = MercadoriaCtrl;
-const fabri = new MercadoriaCtrl();

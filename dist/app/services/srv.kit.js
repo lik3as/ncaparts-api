@@ -29,4 +29,3 @@ class KitCtrl {
     }
 }
 exports.default = KitCtrl;
-const fabri = new KitCtrl();
