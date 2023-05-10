@@ -1,7 +1,7 @@
-import ProdutoCtrl from "../services/srv.prod";
+import { sProd } from 'ncaparts-ctrl'
 import { Request, Response, NextFunction } from "express";
 
-const ctrl = new ProdutoCtrl();
+const ctrl = new sProd();
 
 const on_error = (err: any) => {
   console.log('An error occured while trying to access Products route: \n' + 
