@@ -1,7 +1,7 @@
-import ClienteCtrl from "../services/srv.cli";
+import { sCli } from 'ncaparts-ctrl'
 import { Request, Response } from "express";
 
-const ctrl = new ClienteCtrl();
+const ctrl = new sCli();
 
 const on_error = (err: any) => {
   console.log('An error occurred while trying to access client route: \n' + 
