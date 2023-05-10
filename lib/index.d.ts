@@ -1,0 +1,7 @@
+  export * as ctrl_cli from './services/srv.cli'
+  export * as ctrl_fab from './services/srv.fab'
+  export * as ctrl_kit from './services/srv.kit'
+  export * as ctrl_logi from './services/srv.logi'
+  export * as ctrl_merc from './services/srv.merc'
+  export * as ctrl_prod from './services/srv.prod'
+  export * as ctrl_ven from './services/srv.ven'

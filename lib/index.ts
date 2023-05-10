@@ -1,7 +1,0 @@
-  export * from './services/srv.cli'
-  export * from './services/srv.fab'
-  export * from './services/srv.kit'
-  export * from './services/srv.logi'
-  export * from './services/srv.merc'
-  export * from './services/srv.prod'
-  export * from './services/srv.ven'
