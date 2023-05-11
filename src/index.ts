@@ -12,5 +12,5 @@ app.use(router_prod);
 app.use(router_cli);
 
 app.listen(8080, () => {
-  console.log('\x1b[35mServer is Listening!\x1b[0m\n');
+  console.log('\x1b[35mServer is Listening!\x1b[0m');
 });
