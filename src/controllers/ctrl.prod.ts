@@ -1,4 +1,4 @@
-import { sProd } from 'ncaparts-ctrl'
+import { sProd } from 'ncaparts-db'
 import { Request, Response, NextFunction } from "express";
 
 const ctrl = new sProd();
