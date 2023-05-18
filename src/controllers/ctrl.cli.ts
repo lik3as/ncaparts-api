@@ -1,5 +1,5 @@
-import { sCli } from 'ncaparts-db' 
-import { Request, Response } from "express";
+import { sCli, sProd, sequelize } from 'ncaparts-db' 
+import { Request, Response, NextFunction } from "express";
 
 const ctrl = new sCli();
 
@@ -13,10 +13,35 @@ export default {
     return res.json(await ctrl.getAllBodies().catch(on_error))
   },
 
-  async create(req: Request, res: Response): Promise<void> {
-    await ctrl.createMany(req.body).catch(on_error)
+  async create_many(req: Request, res: Response, next: NextFunction): Promise<void> {
+    //m => how much
+    if (req.query.m != 'many') {
+      return next();
+    }
+    
+    let bodies: Object[] = req.body
 
-    res.json({'placeholder': 'placeholder'})
+    /* If the req body have emails that already have been registered
+    *  at the database, the method will remove them.
+    */
+    //This uses a bulky function, (O(n^2))
+    if (req.query.b == 'bulk') bodies = await ctrl.filterUniques(req.body as Object[]) as Object[];
+
+    const data: any = await ctrl.createMany(bodies).catch(on_error);
+    const inserted: number = (data as Array<any>).length;
+
+    res.send(`\x1b[32mUm total de \x1b[0m\x1b[35m${inserted}\x1b[0m \x1b[32mclientes foram inseridos no banco\x1b[0m` + 
+    '\n\x1b[32mHavia(m) \x1b[0m\x1b[35m' + (req.body as []).length + '\x1b[0m\x1b[32m registro(s) no objeto.\x1b[0m');
+  },
+
+  async create_one(req: Request, res: Response): Promise<void> {
+    const filter = await ctrl.filterUniques(req.body as Object);
+     if (filter != null) {
+      res.send(`\x1bEste cliente já foi registrado: ${(filter as typeof sequelize._model).get()}`)
+     }
+    
+    const data = await ctrl.createOne(req.body);
+    res.send(`\x1b[32mCliente inserido: \x1b[0m\n${data.get()}`)
   },
 
   async get_columns(req: Request, res: Response) {

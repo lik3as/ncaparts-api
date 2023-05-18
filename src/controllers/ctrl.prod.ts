@@ -19,20 +19,23 @@ export default {
 
   async create(req: Request, res: Response, next: NextFunction) {
     if (req.get('categoria') != undefined) {
-      next('route')
-    }
+      return next('route')
+    }  
 
-    res.json({'placeholder': 'placeholder'})
+    return res.json(await ctrl.createMany(req.body));
   },
 
   async create_categoria(req: Request, res: Response, next: NextFunction) {
-    await ctrl.createCategoria(req.get('categoria'), req.body).catch(on_error)
+    await ctrl.createCategoria(req.params.cat, req.body).catch(on_error)
     
-    res.json({'placeholder': 'placeholder'})
+    return res.json({'placeholder': 'placeholder'})
   },
 
   async get_categorias(req: Request, res: Response) {
-    return res.json(await ctrl.getCategorias('Tipo').catch(on_error));
+    return res.json(await ctrl.getCategorias(req.params.cat).catch(on_error));
+  },
 
+  async get_columns(req: Request, res: Response) {
+    return res.json(sProd.skeleton.getAttributes())
   }
 }
