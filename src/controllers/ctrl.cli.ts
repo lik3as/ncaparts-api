@@ -27,7 +27,8 @@ export default {
     //This uses a bulky function, (O(n^2))
     if (req.query.b == 'bulk') bodies = await ctrl.filterUniques(req.body as Object[]) as Object[];
 
-    const data: any = await ctrl.createMany(bodies).catch(on_error);
+    let data = await ctrl.createMany(bodies).catch(on_error);
+    data = (data == null) ? [] : data;
     const inserted: number = (data as Array<any>).length;
 
     res.send(`\x1b[32mUm total de \x1b[0m\x1b[35m${inserted}\x1b[0m \x1b[32mclientes foram inseridos no banco\x1b[0m` + 

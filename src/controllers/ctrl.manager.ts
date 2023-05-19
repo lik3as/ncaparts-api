@@ -16,6 +16,25 @@ export default{
     return res.json(tables);
   },
 
+  async get_table_columns(req: Request, res: Response, next: NextFunction){
+    const table: string = req.params.table;
+    if (cats.includes(table)){
+      return res.redirect(`/tables/Produtos/${table}/columns`);
+    }
+    return res.redirect(`/tables/${table}/columns`)
+  },
+
+  async post_table(req: Request, res: Response, next: NextFunction) {
+    const table: string= req.params.table;
+    req.url = '/tables/' + table;
+
+    if (cats.includes(table)) {
+      req.url = '/tables/Produtos/' + table;
+    }
+
+    return next();
+  },
+
   async get_table(req: Request, res: Response, next: NextFunction){
     const table: string = req.params.table 
     
