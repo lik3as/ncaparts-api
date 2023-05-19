@@ -30,10 +30,10 @@ export default {
 
     if (Array.isArray(data)){
       return res.send(`\x1b[32mVocê registrou um total de \x1b[0m\x1b[35m${data.length} \x1b[32mno banco de dados\x1b[0m` +
-      '\nHaviam ' + req.body.length + ' de categorias no arquivo.');
+      '\n\x1b[32mHaviam \x1b[0m\x1b[35m' + req.body.length + '\x1b[0m\x1b[32m de categorias no arquivo.\x1b[0m');
     }
 
-    return res.send(`Você registrou ${data} no banco de dados.`);
+    return res.send(`\x1b[32mVocê registrou \x1b[0m\x1b[35m${data} \x1b[0m\x1b[32mno banco de dados.\x1b[0m`);
 
   },
 
