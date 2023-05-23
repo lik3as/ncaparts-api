@@ -26,7 +26,6 @@ export default {
     */
     //This uses a bulky function, (O(n^2))
     if (req.query.b == 'bulk') bodies = await ctrl.filterUniques(req.body as Object[]) as Object[];
-
     let data = await ctrl.createMany(bodies).catch(on_error);
     data = (data == null) ? [] : data;
     const inserted: number = (data as Array<any>).length;
@@ -37,11 +36,12 @@ export default {
 
   async create_one(req: Request, res: Response): Promise<void> {
     const filter = await ctrl.filterUniques(req.body as Object);
-     if (filter != null) {
-      res.send(`\x1bEste cliente já foi registrado: ${(filter as typeof sequelize._model).get()}`)
+     if (filter == null) {
+      res.send(`\x1bEste cliente já foi registrado: ${(req.body)}`)
+      return;
      }
     
-    const data = await ctrl.createOne(req.body);
+    const data = await ctrl.createOne(filter);
     res.send(`\x1b[32mCliente inserido: \x1b[0m\n${data.get()}`)
   },
 
