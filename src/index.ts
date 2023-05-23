@@ -5,7 +5,7 @@ import router_cli from './routes/tables/router.cli';
 import router_tables from './routes/router.manager';
 import { sequelize, delaySync } from 'ncaparts-db'
 
-//delaySync(sequelize, { after: 4, force: false })
+delaySync(sequelize, { after: 3, alter: true })
 
 const app: express.Application = express()
 
