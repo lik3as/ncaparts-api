@@ -1,4 +1,4 @@
-import { sCli, sProd, sequelize } from 'ncaparts-db' 
+import { sCli } from 'ncaparts-db' 
 import { Request, Response, NextFunction } from "express";
 
 const ctrl = new sCli();
@@ -37,7 +37,7 @@ export default {
   async create_one(req: Request, res: Response): Promise<void> {
     const filter = await ctrl.filterUniques(req.body as Object);
      if (filter == null) {
-      res.send(`\x1bEste cliente já foi registrado: ${(req.body)}`)
+      res.send(`\x1b[31mEste cliente já foi registrado: \x1b[0m${(req.body)}`)
       return;
      }
     
