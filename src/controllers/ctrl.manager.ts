@@ -26,21 +26,28 @@ export default{
 
   async post_table(req: Request, res: Response, next: NextFunction) {
     const table: string= req.params.table;
-    req.url = '/tables/' + table;
+    req.url = '/tables/' + table ;
 
     if (cats.includes(table)) {
       req.url = '/tables/Produtos/' + table;
     }
 
     return next();
-  },
+  },  
 
   async get_table(req: Request, res: Response, next: NextFunction){
     const table: string = req.params.table 
-    
+
+    req.url = `/tables/${table}`;
+
     if(cats.includes(table)){
-      return res.redirect(`/tables/Produtos/${table}`);
+      req.url = `/tables/Produtos/${table}`;
     }
-    return res.redirect(`/tables/${table}`);
+
+    return next();
   },
+
+  async redirect(req: Request, res: Response, next: NextFunction){
+    return res.redirect('/tables' + req.url);
+  }
 }
