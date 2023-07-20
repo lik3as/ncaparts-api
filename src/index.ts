@@ -4,9 +4,6 @@ import router_prod from './routes/tables/router.prod';
 import router_cli from './routes/tables/router.cli';
 import router_tables from './routes/router.manager';
 import router_merc from './routes/tables/router.merc';
-import { sequelize, delaySync } from 'ncaparts-db'
-
-//delaySync(sequelize, { after: 3, alter: true })
 
 const app: express.Application = express()
 
