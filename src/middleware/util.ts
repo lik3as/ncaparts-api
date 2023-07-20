@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { sequelize } from 'ncaparts-db'
 
 export default {
   info(req: Request, res: Response, next: NextFunction) {
