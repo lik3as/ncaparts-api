@@ -4,7 +4,9 @@ import router_prod from './routes/tables/router.prod';
 import router_cli from './routes/tables/router.cli';
 import router_tables from './routes/router.manager';
 import router_merc from './routes/tables/router.merc';
+import { Database } from 'ncaparts-db';
 
+Database.delaySync({after: 4})
 const app: express.Application = express()
 
 app.use(express.json());
