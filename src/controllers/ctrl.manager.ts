@@ -1,15 +1,17 @@
 import { Request, Response, NextFunction } from "express";
+import { sequelize } from 'ncaparts-db';
 
-const cats: string[] = ['Tipos', 'Marcas', 'Subtipos', 'Modelos', 'Versoes']
+const cats: string[] = ['Tipos', 'Marcas', 'Subtipos', 'Modelos', 'Versoes'];
 
 
 const on_error = (err: any) => {
   console.log('An error occured while trying to access utils route: \n' + 
-  `\x1b[31m${err}\x1b[0m`)
-}
+  `\x1b[31m${err}\x1b[0m`);
+};
 
 export default{
   async get_tables(req: Request, res: Response, next: NextFunction){
+    return await sequelize.getQueryInterface().showAllTables();
   },
 
   async get_table_columns(req: Request, res: Response, next: NextFunction){
