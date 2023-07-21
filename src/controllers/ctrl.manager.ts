@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { sequelize } from 'ncaparts-db';
+import { Database } from 'ncaparts-db';
 
 const cats: string[] = ['Tipos', 'Marcas', 'Subtipos', 'Modelos', 'Versoes'];
 
@@ -11,7 +11,7 @@ const on_error = (err: any) => {
 
 export default{
   async get_tables(req: Request, res: Response, next: NextFunction){
-    return await sequelize.getQueryInterface().showAllTables();
+    return await Database.queryInterface.showAllTables();
   },
 
   async get_table_columns(req: Request, res: Response, next: NextFunction){
