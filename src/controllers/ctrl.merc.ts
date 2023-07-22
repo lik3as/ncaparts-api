@@ -19,7 +19,7 @@ const on_error = (err: any) => {
 export default {
   async get_fifty(req: Request, res: Response, next: NextFunction) {
     if (typeof req.query.s !== 'undefined' && req.query.s != '') return next();
-    if (typeof req.query.page === 'undefined') req.query.page = '0';
+    if (typeof req.query.page === 'undefined') req.query.page = '0'
 
     const page: number = +(req.query.page);
     return res.json( await ctrl.getOffsetBodies(50, page))
@@ -183,6 +183,7 @@ export default {
 
     const filtered = await ctrl.filterUniques(bodies) as Object[]
     const created_check = await ctrl.createMany(filtered).catch(on_error);
+    console.log(created_check);
     
     const created = typeof (created_check == undefined || created_check == null) ?
     [] : created_check as Mercadoria[];

@@ -11,7 +11,8 @@ const on_error = (err: any) => {
 
 export default{
   async get_tables(req: Request, res: Response, next: NextFunction){
-    return await Database.queryInterface.showAllTables();
+    const tables: string[] = await Database.queryInterface.showAllTables();
+    return res.json(tables);
   },
 
   async get_table_columns(req: Request, res: Response, next: NextFunction){
