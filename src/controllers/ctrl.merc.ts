@@ -31,42 +31,24 @@ export default {
     return res.json(await ctrl.getBodies({method: 'join_in_', on: 'prod', args: sku}));
   },
 
-  async get_related_by_sku(req: Request, res: Response, next: NextFunction) {
-    const sku = req.query.s;
+  async get_sugestions(req: Request, res: Response, next: NextFunction) {
+    const sku = req.query.s as string;
 
-    const related = await ctrl.getBodies({method: 'find_by_', on: 'related', args: sku});
+    const prodId = (await ctrl_prod.getId(sku))!;
 
-    if (related == null || related.length == 0) {
-      return next();
+    const merc = await ctrl.getBody({method: "find_by_", on: "unique", args: prodId})!;
+    const tipoID = await ctrl_prod.getCatId("Tipo", merc?.produto.tipo.nome!);
+
+    const queryRelated = await ctrl.getBodies({method: 'find_by_', on: 'related', args: sku});
+
+    let related: typeof skeleton[] = queryRelated!;
+
+    if (!queryRelated || queryRelated.length == 0) { //Nenhum elemento relacionado.
+      const relatedByType = await ctrl.getBodies({method: 'join_in_', on: 'tipo',args: tipoID});
+      related = (relatedByType) ?? await ctrl.getOffsetBodies(Number.POSITIVE_INFINITY, 0);
     }
+
     return res.json(related);
-  },
-
-  async get_related_by_name(req: Request, res: Response) {
-    const name = req.query.s;
-    let relateds: Mercadoria[] = [];
-
-    const mercs = await ctrl.getBodies({method: 'find_by_', on: 'name', args: name});
-
-    if (mercs == null){
-      return res.json(null)
-    }
-
-    await Promise.all(
-      mercs.map(async (merc_by_name) => {
-        let related_by_sku = await ctrl.getBodies({method: 'find_by_', on: 'related', args: merc_by_name.produto.sku});
-        if (related_by_sku == null) {
-          related_by_sku = [];
-        }
-
-        relateds.push(merc_by_name);
-        for (const merc_by_sku of related_by_sku) {
-          relateds.push(merc_by_sku);
-        }
-      })
-    );
-
-    return res.json(relateds);
   },
 
   async create(req: Request, res: Response, next: NextFunction) {
@@ -107,7 +89,6 @@ export default {
     merc_body.disponivel = mercadoria.disponivel;
     merc_body.valor_real = mercadoria.valor_real;
     merc_body.valor_real_revenda = mercadoria.valor_real_revenda;  
-    merc_body.nome = mercadoria.nome;
     
     if (typeof (mercadoria.skus_relacionados) !== 'undefined') {
       let skus_relacionados: string[] = [];
@@ -172,7 +153,6 @@ export default {
         body.disponivel = mercadoria.disponivel;
         body.valor_real = mercadoria.valor_real;
         body.valor_real_revenda = mercadoria.valor_real_revenda;  
-        body.nome = mercadoria.nome;
 
         if (typeof (mercadoria.skus_relacionados) !== 'undefined') 
         body.skus_relacionados = (mercadoria.skus_relacionados as string).split(',');
@@ -183,10 +163,8 @@ export default {
 
     const filtered = await ctrl.filterUniques(bodies) as Object[]
     const created_check = await ctrl.createMany(filtered).catch(on_error);
-    console.log(created_check);
     
-    const created = typeof (created_check == undefined || created_check == null) ?
-    [] : created_check as Mercadoria[];
+    const created = created_check ?? [];
 
     return res.send('\x1b[32mUm total de \x1b[0m' + created.length + '\x1b[32m mercadorias foram adicionadas\x1b[0m')
   },
@@ -197,44 +175,22 @@ export default {
     
     await Promise.all(mercadorias.map(
       async (mercadoria) => {
-        const body: Mercadoria = new sMerc.skeleton().get({plain: true})
-
-        const prodId = (await ctrl_prod.getBody({
-            method: 'find_by_',
-            on: 'unique',
-            args: mercadoria.produto
-          }))?.id;
+        const prodId = (await ctrl_prod.getId(mercadoria.produto))!;
+        const body: Mercadoria = (await ctrl.getBody({method: 'find_by_', on: 'unique', args: prodId}))?.get({plain: true})!;
         
-        let kitId: number | undefined;
-        if  (mercadoria.kit != null){
-          kitId = (await ctrl_kit.getBody({
-              method: 'find_by_',
-              on: 'unique',
-              args: mercadoria.kit
-            }))?.id;
-        }
-
-
-        if (typeof prodId === 'undefined')
-        throw new Error('O SKU não referenciam produto algum.');
-
         if (mercadoria.valor_real_revenda == null)
         mercadoria.valor_real_revenda = 0;
 
-        if (typeof kitId !== 'undefined')
-        body.id_kit = kitId;
-
-        body.id_produto = prodId;
         body.importada = mercadoria.importada;
         body.disponivel = mercadoria.disponivel;
         body.valor_real = mercadoria.valor_real;
         body.valor_real_revenda = mercadoria.valor_real_revenda;  
-        body.nome = mercadoria.nome;
 
         if (typeof (mercadoria.skus_relacionados) !== 'undefined') 
         body.skus_relacionados = (mercadoria.skus_relacionados as string).split(',');
         else body.skus_relacionados= [];
 
+        console.log(body);
         if (await ctrl.update(body).catch(on_error) != undefined)
           bodies.push(body);
 
