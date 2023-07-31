@@ -6,7 +6,7 @@ import router_tables from './routes/router.manager';
 import router_merc from './routes/tables/router.merc';
 import { Database } from 'ncaparts-db';
 
-Database.delaySync({after: 4})
+if(process.argv.includes('-f')) Database.delaySync({after: 4, force: true});
 const app: express.Application = express()
 
 app.use(express.json());
