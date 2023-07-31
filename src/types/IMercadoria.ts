@@ -6,5 +6,4 @@ export default interface IMercadoria{
   disponivel: boolean,
   valor_real: number,
   valor_real_revenda: number | null,
-  nome: string
 }

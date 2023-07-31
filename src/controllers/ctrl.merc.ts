@@ -17,12 +17,19 @@ const on_error = (err: any) => {
 }
 
 export default {
-  async get_fifty(req: Request, res: Response, next: NextFunction) {
+  async get_mercs(req: Request, res: Response, next: NextFunction) {
     if (typeof req.query.s !== 'undefined' && req.query.s != '') return next();
     if (typeof req.query.page === 'undefined') req.query.page = '0'
+    const productType = req.query.type?.toString().toUpperCase() as string | undefined;
 
-    const page: number = +(req.query.page);
-    return res.json( await ctrl.getOffsetBodies(50, page))
+    if (productType) {
+      const productTypeId = await ctrl_prod.getCatId("Tipo", productType) ?? 1;
+      const products = await ctrl.getBodies({method: 'join_in_', on:  'tipo', args: productTypeId}).catch(on_error);
+
+      if (products && products.length > 0) return products;
+    }
+    return res.json(await ctrl.getOffsetBodies(50, 0));
+    
   },
 
   async get_mercs_with_sku(req: Request, res: Response, next: NextFunction) {
@@ -200,7 +207,7 @@ export default {
       '\n\x1b[32mHaviam \x1b[0m\x1b[35m' + req.body.length + '\x1b[0m\x1b[32m de categorias no arquivo.\x1b[0m');
  
   },
-
+ 
   async get_columns(req: Request, res: Response) {
     return res.json(sMerc.skeleton.getAttributes());
   },
