@@ -12,7 +12,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
     "dev": "node ./dist/index.js -v",
-    "force": "node ./dist/index.js -v -f"
+    "force": "node ./dist/index.js -v -f",
+    "deploy": "pm2 start ./dist/index.js -v"
   },
   "keywords": [],
   "author": "",
