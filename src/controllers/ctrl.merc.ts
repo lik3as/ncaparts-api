@@ -23,11 +23,12 @@ export default {
     const productType = req.query.type?.toString().toUpperCase() as string | undefined;
 
     if (productType) {
-      const productTypeId = await ctrl_prod.getCatId("Tipo", productType) ?? 1;
-      const products = await ctrl.getBodies({method: 'join_in_', on:  'tipo', args: productTypeId}).catch(on_error);
+      const productTypeId = await ctrl_prod.getCatId("Tipo", productType);
+      const products = await ctrl.getBodies({method: 'join_in_', on:  'tipo', args: productTypeId}).catch(on_error); 
 
-      if (products && products.length > 0) return products;
+      if (products && products.length > 0) return res.json(products);
     }
+    console.log("returing bodies");
     return res.json(await ctrl.getOffsetBodies(50, 0));
     
   },

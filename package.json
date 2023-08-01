@@ -13,7 +13,7 @@
     "build": "npx tsc",
     "dev": "node ./dist/index.js -v",
     "force": "node ./dist/index.js -v -f",
-    "deploy": "pm2 start ./dist/index.js -v"
+    "deploy": "pm2 start npm --name \"restapi\" -- run dev"
   },
   "keywords": [],
   "author": "",

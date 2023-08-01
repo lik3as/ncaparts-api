@@ -28,7 +28,7 @@ export default {
     if (typeof req.query.page === 'undefined') req.query.page = '0'
 
     const page: number = +(req.query.page);
-    return res.json(await ctrl.getAllBodies(page));
+    return res.json(await ctrl.getAllBodies(page).catch(on_error));
   },
 
   async count(req: Request, res: Response, next: NextFunction) {
