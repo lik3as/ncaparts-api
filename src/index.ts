@@ -18,10 +18,6 @@ app.use(router_prod);
 app.use(router_cli);
 app.use(router_merc);
 
-<<<<<<< HEAD
 app.listen(process.env.PORT, () => {
-=======
-app.listen(8080, () => {
->>>>>>> e7e41b093410146a14bc0791fbb83d299c4616f4
   console.log('\x1b[35mServer is Listening!\x1b[0m');
 });

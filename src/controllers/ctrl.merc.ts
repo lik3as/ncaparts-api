@@ -216,8 +216,4 @@ export default {
     const count = await ctrl.records();
     return res.json(count);
   },
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> e7e41b093410146a14bc0791fbb83d299c4616f4
