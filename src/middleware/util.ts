@@ -15,4 +15,8 @@ export default {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> e7e41b093410146a14bc0791fbb83d299c4616f4

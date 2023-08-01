@@ -28,7 +28,11 @@ export default {
     if (typeof req.query.page === 'undefined') req.query.page = '0'
 
     const page: number = +(req.query.page);
+<<<<<<< HEAD
     return res.json(await ctrl.getAllBodies(page).catch(on_error));
+=======
+    return res.json(await ctrl.getAllBodies(page));
+>>>>>>> e7e41b093410146a14bc0791fbb83d299c4616f4
   },
 
   async count(req: Request, res: Response, next: NextFunction) {
@@ -164,4 +168,8 @@ export default {
     return res.json(sProd.skeleton.getAttributes())
   }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e7e41b093410146a14bc0791fbb83d299c4616f4

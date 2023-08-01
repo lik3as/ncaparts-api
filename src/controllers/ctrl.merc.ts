@@ -24,11 +24,10 @@ export default {
 
     if (productType) {
       const productTypeId = await ctrl_prod.getCatId("Tipo", productType);
-      const products = await ctrl.getBodies({method: 'join_in_', on:  'tipo', args: productTypeId}).catch(on_error); 
+      const products = await ctrl.getBodies({method: 'join_in_', on:  'tipo', args: productTypeId}).catch(on_error);
 
       if (products && products.length > 0) return res.json(products);
     }
-    console.log("returing bodies");
     return res.json(await ctrl.getOffsetBodies(50, 0));
     
   },
@@ -217,4 +216,8 @@ export default {
     const count = await ctrl.records();
     return res.json(count);
   },
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e7e41b093410146a14bc0791fbb83d299c4616f4
