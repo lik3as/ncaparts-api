@@ -28,8 +28,7 @@ export default {
 
       if (products && products.length > 0) return res.json(products);
     }
-    return res.json(await ctrl.getOffsetBodies(50, 0));
-    
+    return res.json(await ctrl.getOffsetBodies(15, +req.query.page));
   },
 
   async get_mercs_with_sku(req: Request, res: Response, next: NextFunction) {
