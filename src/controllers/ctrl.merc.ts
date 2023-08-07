@@ -12,7 +12,7 @@ const skeleton = new sMerc.skeleton();
 type Mercadoria = typeof skeleton
 
 const on_error = (err: any) => {
-  console.log('An error occured while trying to access Products route: \n' + 
+  console.log('An error occured while trying to access merc route: \n' + 
   `\x1b[31m${err}\x1b[0m`)
 }
 
