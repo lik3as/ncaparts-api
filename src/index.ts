@@ -1,22 +1,29 @@
 import express from 'express'
+import cookies from 'cookie-parser'
+
+import cli from './routes/tables/router.cli';
+import authUser from './routes/auth/authUser';
+
 import util from './middleware/util'
-import router_prod from './routes/tables/router.prod';
-import router_cli from './routes/tables/router.cli';
-import router_tables from './routes/router.manager';
-import router_merc from './routes/tables/router.merc';
+import prod from './routes/tables/router.prod';
+import tables from './routes/router.manager';
+import merc from './routes/tables/router.merc';
 import { Database } from 'ncaparts-db';
 
 if(process.argv.includes('-f')) Database.delaySync({after: 4, force: true});
 const app: express.Application = express()
 
 app.use(express.json());
+app.use(cookies());
+
 app.use(util.allow_origin);
 app.use(util.info);
 
-app.use(router_tables);
-app.use(router_prod);
-app.use(router_cli);
-app.use(router_merc);
+app.use(tables);
+app.use(prod);
+app.use(cli);
+app.use(merc);
+app.use(authUser);
 
 app.listen(8080, () => {
   console.log('\x1b[35mServer is Listening!\x1b[0m');

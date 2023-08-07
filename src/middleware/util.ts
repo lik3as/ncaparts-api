@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import jwt from 'jsonwebtoken';
 
 export default {
   info(req: Request, res: Response, next: NextFunction) {
@@ -14,5 +15,18 @@ export default {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
+  },
+  
+  verifyJWT(req: Request, res: Response, next: NextFunction) {
+    const token: string | undefined = req.cookies.token;
+    if (!token) return res.status(403).send("Você não forneceu uma token.");
+    
+    jwt.verify(token, process.env.AUTH_SECRET!, (err, payload) => {
+      if (err){
+        return res.status(403).send("Token Inválida.");
+      }
+      console.log(payload)
+      next()
+    });
   }
-};
+}
