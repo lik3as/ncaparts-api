@@ -25,6 +25,8 @@ app.use(cli);
 app.use(merc);
 app.use(authUser);
 
-app.listen(8080, () => {
+const port = process.env.PORT || 8080;
+
+app.listen(port, () => {
   console.log('\x1b[35mServer is Listening!\x1b[0m');
 });
