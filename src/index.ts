@@ -28,5 +28,5 @@ app.use(authUser);
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {
-  console.log('\x1b[35mServer is Listening!\x1b[0m');
+  console.log('\x1b[35mServer is Listening!\x1b[0m' + ` (${port})`);
 });

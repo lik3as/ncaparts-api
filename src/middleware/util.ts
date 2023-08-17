@@ -12,6 +12,7 @@ export default {
     next()
   },
 
+  
   allow_origin(req: Request, res: Response, next: NextFunction) {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
     res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -32,12 +33,16 @@ export default {
   },
 
   verifyCommonJWT(req: Request, res: Response, next: NextFunction) {
-    const token: string | undefined = req.cookies.token;
+    const token: string | undefined = req.cookies.cookieToken || req.cookies.token;
     if (!token) return res.status(400).send("Você não forneceu uma token.");
     
     jwt.verify(token, process.env.COMMON_AUTH_SECRET!, (err, payload) => {
       if (err){
-        return res.status(403).send("Token Inválida.");
+        jwt.verify(token, process.env.MASTER_AUTH_SECRET!, (err, payload) => {
+          if (err) {
+            return res.status(403).send("Token Inválida.");
+          }
+        })
       }
       next()
     });
