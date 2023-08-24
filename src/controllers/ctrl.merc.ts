@@ -28,15 +28,26 @@ export default {
       const productTypeId = await ctrl_prod.getCatId("Tipo", productType);
       const products = await ctrl.getBodies({method: 'join_in_', on:  'tipo', args: productTypeId}).catch(on_error);
 
-      if (products && products.length > 0) return res.json(products);
+      if (products) return res.json(products);
+      else return res.status(400).send("\x1b[32mSomething went wrong with your type. Check if this type really exists.\x1b[0m");
     }
     return res.json(await ctrl.getOffsetBodies(+req.query.offset || Number.POSITIVE_INFINITY, +req.query.page));
   },
 
   async get_mercs_with_sku(req: Request, res: Response, next: NextFunction) {
     if (typeof req.query.rel !== 'undefined') return next();
-    const sku = req.query.s;
-    return res.json(await ctrl.getBodies({method: 'join_in_', on: 'prod', args: sku}));
+    const sku: string | undefined = req.query.s?.toString();
+
+    if (!sku) {
+      return res.status(400).send("400 - Bad Request: Invalid SKU");
+    }
+
+    const produto = await ctrl_prod.getId(sku);
+    if (!produto) {
+      return res.status(400).send("Bad Request: Inexistent SKU");
+    }
+
+    return res.json(await ctrl.getBody({method: 'find_by_', on: 'unique', args: produto}));
   },
 
   async get_sugestions(req: Request, res: Response, next: NextFunction) {
