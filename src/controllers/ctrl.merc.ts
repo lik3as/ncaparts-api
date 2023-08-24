@@ -1,4 +1,3 @@
-"use strict"
 import { sKit, sMerc, sProd } from "ncaparts-db";
 import {Request, Response, NextFunction} from "express";
 import IMercadoria from "../types/IMercadoria";
@@ -20,6 +19,8 @@ export default {
   async get_mercs(req: Request, res: Response, next: NextFunction) {
     if (typeof req.query.s !== 'undefined' && req.query.s != '') return next();
     if (typeof req.query.page === 'undefined') req.query.page = '0'
+    if (typeof req.query.offset === 'undefined') req.query.offset = '0';
+
     const productType = req.query.type?.toString().toUpperCase() as string | undefined;
 
     if (productType) {
@@ -29,8 +30,7 @@ export default {
       if (products) return res.json(products);
       else return res.status(400).send("\x1b[32mSomething went wrong with your type. Check if this type really exists.\x1b[0m");
     }
-
-    res.json(await ctrl.getOffsetBodies(25, 0));
+    return res.json(await ctrl.getOffsetBodies(+req.query.offset || Number.POSITIVE_INFINITY, +req.query.page));
   },
 
   async get_mercs_with_sku(req: Request, res: Response, next: NextFunction) {
