@@ -13,7 +13,11 @@ import { Database } from 'ncaparts-db';
 if(process.argv.includes('-f')) Database.delaySync({after: 4, force: true});
 const app: express.Application = express()
 
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({
+  limit: '50mb'
+}));
+
 app.use(cookies());
 
 app.use(util.allow_origin);
