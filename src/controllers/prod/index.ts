@@ -1,21 +1,14 @@
-import { sProd } from 'ncaparts-db'
+import { Produto as _Produto } from 'ncaparts-db'
 import { Request, Response, NextFunction } from "express";
 
-const ctrl = new sProd();
-const skeleton  = new sProd.skeleton();
+const { ProdutoCtrl, Produto } = _Produto;
 
-type Produto = typeof skeleton ;
+const ctrl = new ProdutoCtrl();
+const produto  = new Produto;
 
 const on_error = (err: any) => {
   console.log('An error occured while trying to access prod route: \n' + 
   `\x1b[31m${err}\x1b[0m`)
-}
-
-function uppercase(txt: string | undefined): null | string {
-  if (typeof txt === 'undefined'){
-    return null;
-  }
-  return txt.toUpperCase();
 }
 
 export default {
@@ -52,34 +45,31 @@ export default {
     }
 
     let bodies: Object[] = req.body;
-    let created: Produto[] = [];
+    let created: _Produto.attributes[] = [];
 
     //De nome para id, pronto para a inserção
     for (let i: number = 0 ; i < bodies.length; i++){
       let body = bodies[i];
       const prod = body as any;  
 
+      prod.tipo = prod.tipo.toString().toUpperCase();
 
-      if (typeof (prod.imagens) !== 'undefined') 
-      prod.imagens = (prod.imagens as string).split(',');
-      else prod.imagens = [];
+      prod.subtipos = prod.subtipos.map((val: string) => val.toUpperCase());
 
-      prod.tipo = uppercase(prod.tipo);
-      prod.subtipo = uppercase(prod.subtipo);
-      prod.marca = uppercase(prod.marca);
-      prod.modelo = uppercase(prod.modelo);
-      prod.versao = uppercase(prod.versao)
+      prod.marca = prod.marca.toString().toUpperCase();
+
+      prod.modelo = prod.modelo?.toString().toUpperCase();
+      prod.versao = prod.versao?.toString().toUpperCase();
 
       prod.id_tipo = (await ctrl.getCatId('Tipos', prod.tipo));
-      prod.id_subtipo = (await ctrl.getCatId('Subtipo', prod.subtipo));
+      prod.id_subtipo = (await ctrl.getCatId('Subtipo', prod.subtipos[0]));
+
       prod.id_marca = (await ctrl.getCatId('Marca', prod.marca));
       prod.id_modelo = (await ctrl.getCatId('Modelo', prod.modelo));
       prod.id_versao = (await ctrl.getCatId('Versao', prod.versao));
       prod.id_prodSku = (await ctrl.getId(prod.prodSku as string));
 
-
       if (req.query.b == 'bulk') body = await ctrl.filterUniques(prod) as {};
-
 
       if (body != null) {
         const creation = await ctrl.createOne(body).catch(on_error);
@@ -93,23 +83,18 @@ export default {
 
   async update(req: Request, res: Response, next: NextFunction) {
     let bodies: Object[] = req.body;
-    let updateds: Produto[] = [];
+    let updateds: _Produto.attributes[] = [];
 
     //De nome para id, pronto para a inserção
     for (let i: number = 0 ; i < bodies.length; i++){
       let body = bodies[i];
       const prod = body as any;  
 
-
-      if (typeof (prod.imagens) !== 'undefined') 
-      prod.imagens = (prod.imagens as string).split(',');
-      else prod.imagens = [];
-
-      prod.tipo = uppercase(prod.tipo);
-      prod.subtipo = uppercase(prod.subtipo);
-      prod.marca = uppercase(prod.marca);
-      prod.modelo = uppercase(prod.modelo);
-      prod.versao = uppercase(prod.versao)
+      prod.tipo = prod.tipo.toString().toUpperCase();
+      prod.subtipo = prod.subtipo.toString().toUpperCase();
+      prod.marca = prod.marca.toString().toUpperCase();
+      prod.modelo = prod.modelo.toString().toUpperCase();
+      prod.versao = prod.versao.toString().toUpperCase();
 
       prod.id_tipo = (await ctrl.getCatId('Tipos', prod.tipo));
       prod.id_subtipo = (await ctrl.getCatId('Subtipo', prod.subtipo));
@@ -157,10 +142,11 @@ export default {
   },
 
   async get_cat_columns(req: Request, res: Response) {
-    return res.json(sProd.tipoSkeleton.getAttributes());
+    return res.json(Produto.getAttributes());
   },
 
   async get_columns(req: Request, res: Response) {
-    return res.json(sProd.skeleton.getAttributes())
+    return res.json(Produto.getAttributes())
   }
-}
+  
+};
