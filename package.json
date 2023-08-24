@@ -1,13 +1,10 @@
 {
   "dependencies": {
-    "@types/body-parser": "^1.19.2",
-    "@types/jsonwebtoken": "^9.0.2",
-    "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.1",
-    "ncaparts-db": "^2.2.0"
+    "ncaparts-db": "^2.2.1"
   },
   "name": "ncaparts-rest",
   "description": "��#\u0000#\u0000#\u0000 \u0000N\u0000C\u0000A\u0000P\u0000A\u0000R\u0000T\u0000S\u0000 \u0000w\u0000e\u0000b\u0000s\u0000i\u0000t\u0000e\u0000 \u0000R\u0000e\u0000s\u0000t\u0000-\u0000A\u0000P\u0000I\u0000 \u0000N\u0000o\u0000d\u0000e\u0000J\u0000S\u0000 \u0000B\u0000a\u0000c\u0000k\u0000e\u0000n\u0000d\u0000\r\u0000 \u0000",
@@ -25,6 +22,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/cookie-parser": "^1.4.3",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.17",
