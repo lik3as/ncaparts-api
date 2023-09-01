@@ -10,11 +10,6 @@ const ctrlProd = new ProductController();
 const KitController = Kit.KitCtrl;
 const ctrlKit = new KitController();
 
-const on_error = (err: any) => {
-  console.log('An error occured while trying to access merc route: \n' + 
-  `${ANSI_RED}${err}${ANSI_RESET}`)
-}
-
 export default {
   async get_mercs(req: Request, res: Response, next: NextFunction) {
     if (typeof req.query.s !== 'undefined' && req.query.s != '') return next();
@@ -22,14 +17,17 @@ export default {
     const productType = req.query.type?.toString().toUpperCase() as string | undefined;
 
     if (productType) {
-      const productTypeId = await ctrl_prod.getCatId("Tipo", productType);
-      const products = await ctrl.getBodies({method: 'join_in_', on:  'tipo', args: productTypeId}).catch(on_error);
+      const productTypeId = await ctrlProd.getCatId("Tipo", productType);
+      if (!productTypeId)
+      throw new Error("The ID doesn't refer to any existent Type on the database.");
+        
+      const productsFilteredByType = await ctrl.useScope({method: 'join', param: 'tipo', args: productTypeId});
 
-      if (products) return res.json(products);
+      if (productsFilteredByType) return res.json(productsFilteredByType);
       else return res.status(400).send(`${ANSI_RED}Something went wrong with your type. Check if this type really exists.${ANSI_RESET}`);
     }
-
-    res.json(await ctrl.getOffsetBodies(25, 0));
+    const allProducts = await ctrl.getOffsetBodies(25, 0);
+    res.json(allProducts);
   },
 
   async get_mercs_with_sku(req: Request, res: Response, next: NextFunction) {
@@ -40,32 +38,38 @@ export default {
       return res.status(400).send("400 - Bad Request: Invalid SKU");
     }
 
-    const produto = await ctrl_prod.getId(sku);
-    if (!produto) {
+    const mercadoria = await ctrl.findByUnique(sku);
+    if (!mercadoria) {
       return res.status(400).send("Bad Request: Inexistent SKU");
     }
 
-    return res.json(await ctrl.getBody({method: 'find_by_', on: 'unique', args: produto}));
+    return res.json(mercadoria);
   },
 
   async get_sugestions(req: Request, res: Response, next: NextFunction) {
-    const sku = req.query.s as string;
+    const sku = req.query.s;
 
-    const prodId = (await ctrl_prod.getId(sku))!;
+    if (typeof sku !== 'string')
+    throw new Error(`${ANSI_RED}Was expect string, received ${ANSI_RESET}${ANSI_MAGENTA}${typeof sku}${ANSI_RESET}`)
 
-    const merc = await ctrl.getBody({method: "find_by_", on: "unique", args: prodId})!;
-    const tipoID = await ctrl_prod.getCatId("Tipo", merc?.produto.tipo.nome!);
+    const produto = await ctrlProd.findByUnique(sku);
 
-    const queryRelated = await ctrl.getBodies({method: 'find_by_', on: 'related', args: sku});
+    if (!produto)
+    throw new Error(`This SKU (${sku}) does not refer to any product.`)
 
-    let related: typeof skeleton[] = queryRelated!;
+    const relatedMercs = await ctrl.useScope({method: 'find', param: 'related', args: sku}, true);
 
-    if (!queryRelated || queryRelated.length == 0) { //Nenhum elemento relacionado.
-      const relatedByType = await ctrl.getBodies({method: 'join_in_', on: 'tipo',args: tipoID});
-      related = (relatedByType) ?? await ctrl.getOffsetBodies(Number.POSITIVE_INFINITY, 0);
+    if (!!!relatedMercs.length) {
+      /**
+       * Deixa apenas os IDs dos tipos não nulos
+       */
+      const tipos = produto.tipos.filter((t) => typeof t.nome === 'string').map((v) => v.id); 
+
+      const relatedMercs = await ctrl.useScope({method: 'join', param: 'tipo', args: tipos[0]});
+      return res.json(relatedMercs);
     }
 
-    return res.json(related);
+    return res.json(relatedMercs);
   },
 
   async create(req: Request, res: Response, next: NextFunction) {
@@ -78,56 +82,31 @@ export default {
     string
     > | undefined = req.body;
 
-    const merc_body: Mercadoria = skeleton.get({plain: true});
+    try {
+      if (!mercadoria)
+      throw new Error("Empty body.");
 
-    const prodId = (await ctrl_prod.getBody({
-        method: 'find_by_',
-        on: 'unique',
-        args: mercadoria.produto
-      }))?.id;
-    
-    let kitId: number | undefined;
-    if  (mercadoria.kit != null){
-      kitId = (await ctrl_kit.getBody({
-          method: 'find_by_',
-          on: 'unique',
-          args: mercadoria.kit
-        }))?.id;
+      const prodId = await ctrlProd.getIdByUnique(mercadoria.produto);
+      const kitId = await ctrlKit.getIdByUnique(mercadoria.kit);
+
+      if (prodId === null) 
+      throw new Error("O SKU não referecia produto algum.")
+
+      if (mercadoria.valor_real_revenda == null)
+      mercadoria.valor_real_revenda = 0;
+
+      const instanceToFilter: Mercadoria.attributes = Mercadoria.bodyToAttr(mercadoria, { fk_kit: kitId, fk_produto: prodId });
+      const filteredInstances = await ctrl.filter(instanceToFilter);
+
+      if (!filteredInstances)
+      throw new Error(`${ANSI_RED}Esta mercadoria já foi registrada${ANSI_RESET}`);
+
+      const createdInstance = await ctrl.create(filteredInstances);
+      return res.send(`${ANSI_GREEN}Mercadoria inserida: ${ANSI_RESET}${ANSI_BLUE}${createdInstance}${ANSI_RESET}`);
+    } catch (e) {
+      return res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      ${e}`);
     }
-
-
-    if (typeof prodId === 'undefined')
-    throw new Error('O SKU não referenciam produto algum.');
-
-    if (mercadoria.valor_real_revenda == null)
-    mercadoria.valor_real_revenda = 0;
-
-    if (typeof kitId !== 'undefined')
-    merc_body.id_kit = kitId;
-
-    merc_body.id_produto = prodId;
-    merc_body.importada = mercadoria.importada;
-    merc_body.disponivel = mercadoria.disponivel;
-    merc_body.valor_real = mercadoria.valor_real;
-    merc_body.valor_real_revenda = mercadoria.valor_real_revenda;  
-    
-    if (typeof (mercadoria.skus_relacionados) !== 'undefined') {
-      let skus_relacionados: string[] = [];
-      (mercadoria.skus_relacionados as string).
-        split(',').map((val) => {skus_relacionados.push(val.trim())});
-      merc_body.skus_relacionados = skus_relacionados;
-    }
-    else merc_body.skus_relacionados= [];
-
-    const body: {} = merc_body.get({plain: true});
-
-    const filtered = await ctrl.filterUniques(body) as Object;
-    if (filtered == null){
-      return res.send("\x1b[31mEsta mercadoria já foi registrada${ANSI_RESET}");
-    }
-
-    const data = await ctrl.createOne(filtered);
-    return res.send(`${ANSI_GREEN}Mercadoria inserida: ${ANSI_RESET}${ANSI_BLUE}${data}${ANSI_BLUE}`);
   },
 
 
