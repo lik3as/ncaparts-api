@@ -1,15 +1,47 @@
-import { Produto as _Produto } from 'ncaparts-db'
+import { Cat, Fabricante, Mercadoria, Produto } from 'ncaparts-db'
 import { Request, Response, NextFunction } from "express";
 
-const { ProdutoCtrl, Produto } = _Produto;
+const ctrl = new Produto.ProdCtrl();
 
-const ctrl = new ProdutoCtrl();
-const produto  = new Produto;
+const ctrlMerc = new Mercadoria.MercCtrl();
+
+const ctrlFab = new Fabricante.FabCtrl();
+
+const Mdl = Produto.Mdl
+
+type cats = {
+  tipos: string[],
+  grupos: string[],
+  modelos: string[],
+  marcas: string[]
+};
 
 const on_error = (err: any) => {
-  console.log('An error occured while trying to access prod route: \n' + 
-  `\x1b[31m${err}\x1b[0m`)
+  console.log('An error occured while trying to access prod route: \n' +
+    `${ANSI_RED}${err}${ANSI_RESET}`)
 }
+
+const assertCatId = async (id: number | null, cName: "tp" | "gp" | "ma" | "mo", falsy?: Function) => {
+  if (id) {
+    switch (cName) {
+      case "tp": return await Cat.TipoMdl.findByPk(id) as Cat.attributes<"default">;
+      case "gp": return await Cat.GrupoMdl.findByPk(id) as Cat.attributes<"default">;
+      case "ma": return await Cat.MarcaMdl.findByPk(id) as Cat.attributes<"default">;
+      case "mo": return await Cat.MdloMdl.findByPk(id) as Cat.attributes<"default">;
+    }
+  }
+  else {
+    (falsy) ? falsy() : void (0);
+    switch (cName) {
+      case "tp": return await Cat.TipoMdl.findByPk(0) as Cat.attributes<"default">;
+      case "gp": return await Cat.GrupoMdl.findByPk(0) as Cat.attributes<"default">;
+      case "ma": return await Cat.MarcaMdl.findByPk(0) as Cat.attributes<"default">;
+      case "mo": return await Cat.MdloMdl.findByPk(0) as Cat.attributes<"default">;
+    }
+  }
+
+}
+
 
 export default {
 
@@ -32,109 +64,300 @@ export default {
   async getOne(req: Request, res: Response) {
     const sku: string = req.query.sku as string;
 
-    const prod = (await ctrl.getBody({method: 'find_by_',
-     on: 'unique', args: sku}))!;
+    const produto = await ctrl.findByUnique(sku);
 
-    res.json(prod);
+    try {
+      if (!produto)
+      throw new Error("Este SKU não corresponde a nenhum produto: " + sku);
+
+      res.json(produto);
+    } catch (e) {
+      res.send(`${ANSI_RED}Houve um erro ao consultar o produto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      ${e}`);
+    }
   },
 
+
+  /**
+   * @param req.query
+   * 
+   * u -> should update or not. Boolean by existence (undefined or not undefined);
+   * 
+   * object_type -> the body object type. It must be the Produto.*body* or Produto.*attrs* type.
+   */
   async create_many(req: Request, res: Response, next: NextFunction) {
     const query = req.query;
-    if (query.a == "update") {
+    if (query.u == "update") {
       return next();
     }
 
-    let bodies: Object[] = req.body;
-    let created: _Produto.attributes[] = [];
+    const produtos: 
+    (Produto.body<string, string, string, string[], string[], string[], string[]>
+    | Produto.attributes<"creation">)[]
+    | undefined = req.body;
 
-    //De nome para id, pronto para a inserção
-    for (let i: number = 0 ; i < bodies.length; i++){
-      let body = bodies[i];
-      const prod = body as any;  
+    try {
+      if (!produtos)
+      throw new Error("O corpo da requisição não pode estar vazio.");
 
-      prod.tipo = prod.tipo.toString().toUpperCase();
+      const wrongCats: cats = { tipos: [], grupos: [], marcas: [], modelos: [] };
+      let created: Produto.attributes<"default">[] = [];
 
-      prod.subtipos = prod.subtipos.map((val: string) => val.toUpperCase());
+      if (query.object_type === "body") {
+        const produtos: Produto.body<string, string, string, string[], string[], string[], string[]>[] = req.body;
+        const filteredAndConverted = await Promise.all(
+          (await ctrl.filter(produtos))
+          .map(async (produto)
+            : Promise<Produto.attributes<"creation">> => {
+              const tipos = await Promise.all(produto.tipos.map(async (t) => {
+                const id = await ctrl.getCatId("Tipos", t);
+                return assertCatId(id, "tp", () => wrongCats.tipos.push(t));
+              }))
 
-      prod.marca = prod.marca.toString().toUpperCase();
+              const grupos = await Promise.all(produto.grupos.map(async (g) => {
+                const id = await ctrl.getCatId("Grupos", g);
+                return assertCatId(id, "gp", () => wrongCats.grupos.push(g))
+              }));
 
-      prod.modelo = prod.modelo?.toString().toUpperCase();
-      prod.versao = prod.versao?.toString().toUpperCase();
+              const modelos = await Promise.all(produto.modelos.map(async (m) => {
+                const id = await ctrl.getCatId("Modelos", m);
+                return assertCatId(id, "mo", () => wrongCats.modelos.push(m));
+              }));
 
-      prod.id_tipo = (await ctrl.getCatId('Tipos', prod.tipo));
-      prod.id_subtipo = (await ctrl.getCatId('Subtipo', prod.subtipos[0]));
+              const marcas = await Promise.all(produto.marcas.map(async (m) => {
+                const id = await ctrl.getCatId("Marcas", m);
+                return assertCatId(id, "ma", () => wrongCats.marcas.push(m));
+              }));
 
-      prod.id_marca = (await ctrl.getCatId('Marca', prod.marca));
-      prod.id_modelo = (await ctrl.getCatId('Modelo', prod.modelo));
-      prod.id_versao = (await ctrl.getCatId('Versao', prod.versao));
-      prod.id_prodSku = (await ctrl.getId(prod.prodSku as string));
+              const fabricante = await ctrlFab.findByUnique(produto.fabricante),
+              mercadoria = (produto.mercadoria) ? await ctrlMerc.findByUnique(produto.mercadoria) : null,
+              subProduto = (produto.produto) ? await ctrl.findByUnique(produto.produto) : null;
 
-      if (req.query.b == 'bulk') body = await ctrl.filterUniques(prod) as {};
+              if (!fabricante)
+              throw new Error(`Você não pode inserir  um produto sem o fabricante! Produto: ${produto.sku}`);
 
-      if (body != null) {
-        const creation = await ctrl.createOne(body).catch(on_error);
-        if (creation != undefined) created?.push(creation);
-      }
+              return {
+                ...produto,
+                tipos: tipos,
+                grupos: grupos,
+                modelos: modelos,
+                marcas: marcas,
+                mercadoria: mercadoria,
+                produto: subProduto,
+                fabricante: fabricante
+              }
+            }
+          )
+        );
+
+        created = await Produto.Mdl.bulkCreate(filteredAndConverted);
+      } else if (query.object_type === "attrs") {
+        const produtos: Produto.attributes<"creation">[] = req.body;
+
+        const filtered = await ctrl.filter(produtos);
+
+        created = await Produto.Mdl.bulkCreate(filtered);
+      } else {
+        throw new Error("O parâmetro query object_type não foi satisfeito corretamente.");
+      } 
+
+      return res.send(`${ANSI_GREEN}Você registrou um total de ${ANSI_RESET}${ANSI_MAGENTA}${created.length} ${ANSI_GREEN}produtos no banco de dados${ANSI_RESET}` +
+        `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} de produtos no arquivo.${ANSI_RESET}.
+        Cheque as seguintes categorias (se nada houver, você escreveu todas corretamente.): 
+        ${ (!!!wrongCats.tipos.length) ? `tipos: ${wrongCats.tipos}` : "" })
+        ${ (!!!wrongCats.grupos.length) ? `grupos: ${wrongCats.grupos}` : "" })
+        ${ (!!!wrongCats.modelos.length) ? `modelos: ${wrongCats.modelos}` : "" })
+        ${ (!!!wrongCats.marcas.length) ? `marcas: ${wrongCats.marcas}` : "" })
+      `);
+
+    } catch (e) {
+      res.send(`${ANSI_RED}Houve um erro ao inserir os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      ${e}`);
+
     }
-
-    return res.send(`\x1b[32mVocê registrou um total de \x1b[0m\x1b[35m${created.length} \x1b[32mprodutos no banco de dados\x1b[0m` +
-      '\n\x1b[32mHaviam \x1b[0m\x1b[35m' + req.body.length + '\x1b[0m\x1b[32m de categorias no arquivo.\x1b[0m');
   },
 
+  /**
+   * @param req.query
+   * 
+   * object_type -> the body object type. It must be the Mercadoria.*body* or Mercadoria.*attrs* type.
+   */
   async update(req: Request, res: Response, next: NextFunction) {
-    let bodies: Object[] = req.body;
-    let updateds: _Produto.attributes[] = [];
-
-    //De nome para id, pronto para a inserção
-    for (let i: number = 0 ; i < bodies.length; i++){
-      let body = bodies[i];
-      const prod = body as any;  
-
-      prod.tipo = prod.tipo.toString().toUpperCase();
-      prod.subtipo = prod.subtipo.toString().toUpperCase();
-      prod.marca = prod.marca.toString().toUpperCase();
-      prod.modelo = prod.modelo.toString().toUpperCase();
-      prod.versao = prod.versao.toString().toUpperCase();
-
-      prod.id_tipo = (await ctrl.getCatId('Tipos', prod.tipo));
-      prod.id_subtipo = (await ctrl.getCatId('Subtipo', prod.subtipo));
-      prod.id_marca = (await ctrl.getCatId('Marca', prod.marca));
-      prod.id_modelo = (await ctrl.getCatId('Modelo', prod.modelo));
-      prod.id_versao = (await ctrl.getCatId('Versao', prod.versao));
-      prod.id_prodSku = (await ctrl.getId(prod.prodSku as string));
+    const query = req.query;
+    const produtos: (Produto.body<
+      string, string,
+      string,
+      string[],
+      string[],
+      string[],
+      string[]>
+      | Produto.attributes<"creation">)[]
+      | undefined = req.body;
 
 
-      if (body != null) {
-        const updated = await ctrl.update(body).catch(on_error);
-        if (updated != null && typeof updated !=='undefined') updateds?.push(prod);
+    try {
+      if (!produtos)
+        throw new Error("Body is empty.");
+
+      let updated: Produto.attributes[] = [];
+      const wrongCats: cats = { tipos: [], grupos: [], marcas: [], modelos: [] };
+      if (query.object_type === "body") {
+        const produtos: Produto.body<
+        string, string,
+        string,
+        string[],
+        string[],
+        string[],
+        string[]>[] = req.body;
+
+        updated = await Promise.all(
+          produtos.map(async (produto) => {
+            produto.tipos = produto.tipos.map((v) => v.toUpperCase());
+            produto.grupos = produto.grupos.map((v) => v.toUpperCase());
+            produto.modelos = produto.modelos.map((v) => v.toUpperCase());
+            produto.marcas = produto.marcas.map((v) => v.toUpperCase());
+
+            const prodId = await ctrl.getIdByUnique(produto.sku);
+            const prodToUpdate = await Mdl.findByPk(prodId);
+
+            if (!prodToUpdate)
+            throw new Error(`Não há produto com o SKU especificado: (${produto.sku})`)
+
+
+            /** Instead of using ctrl.getCatId, use the methods of the upcoming class "Categorias"
+             * 
+             * This "Cats" section of the middleware just take all of the unique strings in each
+             * category and spits the respective Cat Tuple in the Cat.attrs<"creation"> format.
+             * 
+             * Further on, it's almost the same. A conversion of string values defined in Produto.body<string...>
+             * in the respective attrs types.
+             */
+            const tipos = await Promise.all(produto.tipos.map(async (t) => {
+              const id = await ctrl.getCatId("Tipos", t);
+              return assertCatId(id, "tp", () => wrongCats.tipos.push(t));
+            }))
+
+            const grupos = await Promise.all(produto.grupos.map(async (g) => {
+              const id = await ctrl.getCatId("Grupos", g);
+              return assertCatId(id, "gp", () => wrongCats.grupos.push(g))
+            }));
+
+            const modelos = await Promise.all(produto.modelos.map(async (m) => {
+              const id = await ctrl.getCatId("Modelos", m);
+              return assertCatId(id, "mo", () => wrongCats.modelos.push(m));
+            }));
+
+            const marcas = await Promise.all(produto.marcas.map(async (m) => {
+              const id = await ctrl.getCatId("Marcas", m);
+              return assertCatId(id, "ma", () => wrongCats.marcas.push(m));
+            }));
+
+            const subProduto = (produto.produto) ? await ctrl.findByUnique(produto.produto) : null;
+            const mercadoria = (produto.mercadoria) ? await ctrlMerc.findByUnique(produto.mercadoria) : null;
+
+            const fabricante = await ctrlFab.findByUnique(produto.fabricante);
+
+            if (!fabricante)
+            throw new Error(`Você não pode atualizar um produto sem o fabricante! Produto: ${produto.sku}`);
+
+            return await prodToUpdate.update({
+              ...produto, produto: subProduto, mercadoria: mercadoria, fabricante: fabricante,
+              tipos: tipos, grupos: grupos, modelos: modelos, marcas: marcas
+            });
+          }))
+
+      } else if (query.object_type === "attrs") {
+        const mercadorias: Produto.attributes<"creation">[] = req.body;
+
+        updated = await Promise.all(mercadorias.map(async (produto) => {
+          const produtoId = await ctrl.getIdByUnique(produto.sku),
+          produtoToUpdate = await Produto.Mdl.findByPk(produtoId);
+
+          if (!produtoToUpdate)
+          throw new Error(`Não há produto com o SKU especificado: (${produto.sku})`)
+          
+          produto.tipos = produto.tipos.map((v) => ({...v, nome: v.nome.toUpperCase()}));
+          produto.grupos = produto.grupos.map((v) => ({...v, nome: v.nome.toUpperCase()}));
+          produto.modelos = produto.modelos.map((v) => ({...v, nome: v.nome.toUpperCase()}));
+          produto.marcas = produto.marcas.map((v) => ({...v, nome: v.nome.toUpperCase()}));
+          
+          
+          const fabricante = await ctrlFab.findByUnique(produto.fabricante.cnpj),
+          subProduto = (produto.produto) ? await ctrl.findByUnique(produto.produto.sku) : null,
+          mercadoria = (produto.mercadoria) ? await ctrlMerc.findByUnique(produto.mercadoria.produto.sku) : null,
+          tipos = await Promise.all(produto.tipos.map(async (t) => {
+            const id = await ctrl.getCatId(t.nome, "Tipos");
+            return assertCatId(id, "tp", () => wrongCats.tipos.push(t.nome));
+          })),
+          grupos = await Promise.all(produto.grupos.map(async (g) => {
+            const id = await ctrl.getCatId(g.nome, "Grupos");
+            return assertCatId(id, "gp", () => wrongCats.grupos.push(g.nome));
+          })),
+          marcas = await Promise.all(produto.marcas.map(async (m) => {
+            const id = await ctrl.getCatId(m.nome, "Marcas");
+            return assertCatId(id, "ma", () => wrongCats.marcas.push(m.nome));
+          })),
+          modelos = await Promise.all(produto.modelos.map(async (m) => {
+            const id = await ctrl.getCatId(m.nome, "Modelos");
+            return assertCatId(id, "mo", () => wrongCats.modelos.push(m.nome));
+          }));
+
+          if (!fabricante)
+          throw new Error(`Você não pode atualizar um produto sem o fabricante! Produto: ${produto.sku}`);
+
+          return await produtoToUpdate.update({...produto, fabricante: fabricante, tipos: tipos, grupos: grupos, marcas: marcas, modelos: modelos, produto: subProduto, 
+          mercadoria: mercadoria});
+        }))
+      } else {
+        throw new Error("O parâmetro query object_type não foi satisfeito corretamente.");
       }
-    }
+      return res.send(`${ANSI_GREEN}Você atualizou um total de ${ANSI_RESET}${ANSI_MAGENTA}${updated.length} ${ANSI_GREEN}produtos no banco de dados${ANSI_RESET}` +
+        `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} de produtos no arquivo.${ANSI_RESET}.
+        Cheque as seguintes categorias (se nada houver, você escreveu todas corretamente.): 
+        ${ (!!!wrongCats.tipos.length) ? `tipos: ${wrongCats.tipos}` : "" })
+        ${ (!!!wrongCats.grupos.length) ? `grupos: ${wrongCats.grupos}` : "" })
+        ${ (!!!wrongCats.modelos.length) ? `modelos: ${wrongCats.modelos}` : "" })
+        ${ (!!!wrongCats.marcas.length) ? `marcas: ${wrongCats.marcas}` : "" })
+      `);
 
-    return res.send(`\x1b[32mVocê atualizou um total de \x1b[0m\x1b[35m${updateds.length} \x1b[32mno banco de dados\x1b[0m` +
-      '\n\x1b[32mHaviam \x1b[0m\x1b[35m' + req.body.length + '\x1b[0m\x1b[32m de categorias no arquivo.\x1b[0m');
-    
+    } catch (e) {
+      res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      ${e}`);
+    }
   },
 
   async create_categoria(req: Request, res: Response, next: NextFunction) {
-    const body = req.body;
+    const catOrCats: Cat.body
+      | Cat.body[]
+      | undefined = req.body;
 
-    if (Array.isArray(body)){
+    try {
+      if (!catOrCats)
+        throw new Error("Body is empty.");
 
-      body.forEach((cat) => {
-        cat.nome = (cat.nome as string).toUpperCase();
-      })
+      if (Array.isArray(catOrCats)) {
 
-      let created = await ctrl.createCategoria(req.params.cat, body).catch(on_error)
-      if (created == undefined) created = [];
+        /**
+         * All cats are uppercased.
+         */
+        const uppercasedCats: Cat.attributes<"creation">[] = catOrCats.map((cat) => ({
+          nome: cat.nome.toUpperCase()
+        }))
 
-      return res.send(`\x1b[32mVocê registrou um total de \x1b[0m\x1b[35m${(created  as []).length} \x1b[32mno banco de dados\x1b[0m` +
-      '\n\x1b[32mHaviam \x1b[0m\x1b[35m' + req.body.length + '\x1b[0m\x1b[32m produtos no arquivo.\x1b[0m');
+        const created = await ctrl.createCategoria(req.params.cat, uppercasedCats) as Cat.attributes[];
+
+        return res.send(`${ANSI_GREEN}Você registrou um total de ${ANSI_RESET}${ANSI_MAGENTA}${created.length} ${ANSI_GREEN}no banco de dados${ANSI_RESET}` +
+          `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA}' + req.body.length + '${ANSI_RESET}${ANSI_GREEN} produtos no arquivo.${ANSI_RESET}`);
+      }
+
+      catOrCats.nome = catOrCats.nome.toUpperCase();
+      await ctrl.createCategoria(req.params.cat, catOrCats).catch(on_error);
+
+      return res.send(`${ANSI_GREEN}Você registrou ${ANSI_RESET}${ANSI_MAGENTA}${catOrCats} ${ANSI_RESET}${ANSI_GREEN}no banco de dados.${ANSI_RESET}`);
+    } catch (e) {
+      res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      ${e}`);
     }
-
-    body.nome = (body.nome as string).toUpperCase();
-    await ctrl.createCategoria(req.params.cat, body).catch(on_error)
-    return res.send(`\x1b[32mVocê registrou \x1b[0m\x1b[35m${body} \x1b[0m\x1b[32mno banco de dados.\x1b[0m`);
-
   },
 
   async get_categorias(req: Request, res: Response) {
@@ -142,11 +365,11 @@ export default {
   },
 
   async get_cat_columns(req: Request, res: Response) {
-    return res.json(Produto.getAttributes());
+    return res.json(ctrl.Model.getAttributes());
   },
 
   async get_columns(req: Request, res: Response) {
-    return res.json(Produto.getAttributes())
+    return res.json(ctrl.Model.getAttributes())
   }
-  
+
 };
