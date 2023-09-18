@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import ctrlMerc from '../../controllers/ctrl.merc';
+import ctrlMerc from '../../controllers/mercCtrl';
 import util from '../../middleware/util';
 
 const router = Router();

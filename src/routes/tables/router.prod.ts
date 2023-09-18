@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import ctrlProd from '../../controllers/ctrl.prod';
+import ctrlProd from '../../controllers/prodCtrl';
 import util from '../../middleware/util';
 
 const router = Router()

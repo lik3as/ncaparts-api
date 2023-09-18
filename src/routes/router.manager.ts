@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import ctrl_tables from '../controllers/ctrl.manager';
+import ctrl_tables from '../controllers/managerCtrl';
 
 const router: Router = Router()
 
