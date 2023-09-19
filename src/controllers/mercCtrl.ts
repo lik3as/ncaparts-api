@@ -1,6 +1,7 @@
 import { Mercadoria, Produto, Kit } from "ncaparts-db";
 
 import { Request, Response, NextFunction } from "express";
+import { ANSI_BLUE, ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET } from "../constants";
 
 const Controller = Mercadoria.MercCtrl;
 const Mdl = Mercadoria.Mdl;
@@ -313,7 +314,7 @@ export default {
 
     } catch (e) {
       res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-        ${e}`);
+      ${e}`);
     }
   },
 
