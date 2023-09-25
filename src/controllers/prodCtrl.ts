@@ -20,27 +20,6 @@ const on_error = (err: any) => {
     `${ANSI_RED}${err}${ANSI_RESET}`)
 }
 
-const assertCatId = async (id: number | null, cName: "tp" | "gp" | "ma" | "mo", falsy?: Function) => {
-  if (id) {
-    switch (cName) {
-      case "tp": return await Cat.TipoMdl.findByPk(id) as Cat.attributes<"default">;
-      case "gp": return await Cat.GrupoMdl.findByPk(id) as Cat.attributes<"default">;
-      case "ma": return await Cat.MarcaMdl.findByPk(id) as Cat.attributes<"default">;
-      case "mo": return await Cat.MdloMdl.findByPk(id) as Cat.attributes<"default">;
-    }
-  }
-  else {
-    (falsy) ? falsy() : void (0);
-    switch (cName) {
-      case "tp": return await Cat.TipoMdl.findByPk(0) as Cat.attributes<"default">;
-      case "gp": return await Cat.GrupoMdl.findByPk(0) as Cat.attributes<"default">;
-      case "ma": return await Cat.MarcaMdl.findByPk(0) as Cat.attributes<"default">;
-      case "mo": return await Cat.MdloMdl.findByPk(0) as Cat.attributes<"default">;
-    }
-  }
-
-}
-
 
 export default {
 
@@ -49,10 +28,10 @@ export default {
    */
   async latest(req: Request, res: Response, next: NextFunction) {
     if (typeof req.query.sku !== 'undefined' && req.query.sku != '') return next();
-    if (typeof req.query.page === 'undefined') req.query.page = '0'
 
-    const page: number = +(req.query.page);
-    return res.json(await ctrl.getAllBodies(page).catch(on_error));
+    const offset: number | undefined = +(req.query.offset ?? 0) || undefined;
+    const limit: number | undefined = +(req.query.limit ?? 0) || undefined;
+    return res.json(await ctrl.getSome(limit, offset).catch(on_error));
   },
 
   async count(req: Request, res: Response, next: NextFunction) {
@@ -67,7 +46,7 @@ export default {
 
     try {
       if (!produto)
-      throw new Error("Este SKU não corresponde a nenhum produto: " + sku);
+        throw new Error("Este SKU não corresponde a nenhum produto: " + sku);
 
       res.json(produto);
     } catch (e) {
@@ -90,80 +69,78 @@ export default {
       return next();
     }
 
-    const produtos: 
-    (Produto.body<string, string, string, string[], string[], string[], string[]>
-    | Produto.attributes<"creation">)[]
-    | undefined = req.body;
+    const produtos:
+      (Produto.body<string, string, string, string[], string[], string[], string[]>
+        | Produto.attributes<"creation">)[]
+      | undefined = req.body;
 
     try {
       if (!produtos)
-      throw new Error("O corpo da requisição não pode estar vazio.");
+        throw new Error("O corpo da requisição não pode estar vazio.");
 
       const wrongCats: cats = { tipos: [], grupos: [], marcas: [], modelos: [] };
       let created: Produto.attributes<"default">[] = [];
 
       if (query.object_type === "body") {
         const produtos: Produto.body<string, string, string, string[], string[], string[], string[]>[] = req.body;
-        const filteredAndConverted = await Promise.all(
+        created = await Promise.all(
           (await ctrl.filter(produtos))
-          .map(async (produto)
-            : Promise<Produto.attributes<"creation">> => {
-                const tipos = await Promise.all(produto.tipos.map(async (t) => {
-                  const id = await ctrl.getCatId("Tipos", t);
-                  return assertCatId(id, "tp", () => wrongCats.tipos.push(t));
-                }))
+            .map(async (produto) => {
+              const tipos = await Promise.all(produto.tipos.map(async (t) => { 
+                const id = await ctrl.getCatId("Tipos", t);
+                if (!id) wrongCats.tipos.push(t);
+                return id ? await Cat.TipoMdl.findByPk(id, {raw: true}) : null;
+              }).filter((v, i, arr) => v != null && arr.indexOf(v) === i)) as Cat.attributes<"default">[]; /** Filtra categorias inexistentes e repetidas. */
 
-                const grupos = await Promise.all(produto.grupos.map(async (g) => {
-                  try {
-                    const id = await ctrl.getCatId("Grupos", g);
-                    return assertCatId(id, "gp", () => wrongCats.grupos.push(g))
-                  } catch (e) {
-                    throw new Error("Error in grupos conversion to surrogate");
-                  }
-                }));
+              const grupos: (Cat.attributes | null)[] = await Promise.all(produto.grupos.map(async (g) => {
+                const id = await ctrl.getCatId("Grupos", g);
+                if (!id) wrongCats.grupos.push(g);
+                return id ? await Cat.GrupoMdl.findByPk(id) : null;
+              }).filter((v, i, arr) => v != null && arr.indexOf(v) === i)) as Cat.attributes<"default">[]; /** Filtra categorias inexistentes e repetidas. */
 
-                const modelos = await Promise.all(produto.modelos.map(async (m) => {
-                  try {
-                    const id = await ctrl.getCatId("Modelos", m);
-                    return assertCatId(id, "mo", () => wrongCats.modelos.push(m));
-                  } catch (e) {
-                    throw new Error("Error in modelos conversion to surrogate");
-                  }
-                }));
+              const modelos: (Cat.attributes | null)[] = await Promise.all(produto.modelos.map(async (m) => {
+                const id = await ctrl.getCatId("Modelos", m);
+                if (!id) wrongCats.modelos.push(m);
+                return id ? await Cat.MdloMdl.findByPk(id) : null;
+              }).filter((v, i, arr) => v != null && arr.indexOf(v) === i)) as Cat.attributes<"default">[]; /** Filtra categorias inexistentes e repetidas. */
 
-                const marcas = await Promise.all(produto.marcas.map(async (m) => {
-                  try {
-                    const id = await ctrl.getCatId("Marcas", m);
-                    return assertCatId(id, "ma", () => wrongCats.marcas.push(m));
-                  } catch (e) {
-                    throw new Error("Error in marcas conversion to surrogate")
-                  }
-                }));
-
-              console.log("nothing wrong til here :)");
+              const marcas = await Promise.all(produto.marcas.map(async (m) => {
+                const id = await ctrl.getCatId("Marcas", m);
+                if (!id) wrongCats.marcas.push(m);
+                return id ? await Cat.MarcaMdl.findByPk(id) : null;
+              }).filter((v, i, arr) => v != null && arr.indexOf(v) === i)) as Cat.attributes<"default">[]; /** Filtra categorias inexistentes e repetidas. */
 
               const fabricante = await ctrlFab.findByUnique(produto.fabricante),
-              mercadoria = (produto.mercadoria) ? await ctrlMerc.findByUnique(produto.mercadoria) : null,
-              subProduto = (produto.produto) ? await ctrl.findByUnique(produto.produto) : null;
+                mercadoria = (produto.mercadoria) ? await ctrlMerc.findByUnique(produto.mercadoria) : null,
+                subProduto = (produto.produto) ? await ctrl.findByUnique(produto.produto) : null;
 
               if (!fabricante)
-              throw new Error(`Você não pode inserir  um produto sem o fabricante! Produto: ${produto.sku}`);
+              throw new Error(`Você não pode inserir  um produto sem um fabricante válido!
+              Produto: ${produto.sku}
+              Fabricante: ${produto.fabricante}`);
 
-              return {
+              const produtoToCreate = {
                 ...produto,
-                tipos: tipos,
-                grupos: grupos,
-                modelos: modelos,
-                marcas: marcas,
+                tipos: tipos.filter((v) => v!=null) as Cat.attributes<"default">[],
+                grupos: grupos.filter((v) => v!=null) as Cat.attributes<"default">[],
+                modelos: modelos.filter((v) => v!=null) as Cat.attributes<"default">[],
+                marcas: marcas.filter((v) => v!=null) as Cat.attributes<"default">[],
                 mercadoria: mercadoria,
                 produto: subProduto,
                 fabricante: fabricante
               }
+              
+              const createdProduto = await Produto.Mdl.create({ ...produtoToCreate, fk_fabricante: fabricante.id, fk_produto: subProduto?.id });
+              await createdProduto.$add("tipos", produtoToCreate.tipos.map((t) => t.id));
+              await createdProduto.$add("marcas", produtoToCreate.marcas.map((m) => m.id));
+              await createdProduto.$add("modelos", produtoToCreate.modelos.map((m) => m.id));
+              await createdProduto.$add("grupos", produtoToCreate.grupos.map((g) => g.id));
+
+              return createdProduto;
             }
-          )
+            )
         );
 
-        created = await Produto.Mdl.bulkCreate(filteredAndConverted);
       } else if (query.object_type === "attrs") {
         const produtos: Produto.attributes<"creation">[] = req.body;
 
@@ -172,15 +149,15 @@ export default {
         created = await Produto.Mdl.bulkCreate(filtered);
       } else {
         throw new Error("O parâmetro query object_type não foi satisfeito corretamente.");
-      } 
+      }
 
       return res.send(`${ANSI_GREEN}Você registrou um total de ${ANSI_RESET}${ANSI_MAGENTA}${created.length} ${ANSI_GREEN}produtos no banco de dados${ANSI_RESET}` +
         `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} de produtos no arquivo.${ANSI_RESET}.
         Cheque as seguintes categorias (se nada houver, você escreveu todas corretamente.): 
-        ${ (!!!wrongCats.tipos.length) ? `tipos: ${wrongCats.tipos}` : "" })
-        ${ (!!!wrongCats.grupos.length) ? `grupos: ${wrongCats.grupos}` : "" })
-        ${ (!!!wrongCats.modelos.length) ? `modelos: ${wrongCats.modelos}` : "" })
-        ${ (!!!wrongCats.marcas.length) ? `marcas: ${wrongCats.marcas}` : "" })
+        ${(wrongCats.tipos.length > 0) ? `tipos: ${wrongCats.tipos}` : ""}
+        ${(wrongCats.grupos.length > 0) ? `grupos: ${wrongCats.grupos}` : ""}
+        ${(wrongCats.modelos.length > 0) ? `modelos: ${wrongCats.modelos}` : ""}
+        ${(wrongCats.marcas.length > 0) ? `marcas: ${wrongCats.marcas}` : ""}
       `);
 
     } catch (e) {
@@ -216,12 +193,12 @@ export default {
       const wrongCats: cats = { tipos: [], grupos: [], marcas: [], modelos: [] };
       if (query.object_type === "body") {
         const produtos: Produto.body<
-        string, string,
-        string,
-        string[],
-        string[],
-        string[],
-        string[]>[] = req.body;
+          string, string,
+          string,
+          string[],
+          string[],
+          string[],
+          string[]>[] = req.body;
 
         updated = await Promise.all(
           produtos.map(async (produto) => {
@@ -234,7 +211,7 @@ export default {
             const prodToUpdate = await Mdl.findByPk(prodId);
 
             if (!prodToUpdate)
-            throw new Error(`Não há produto com o SKU especificado: (${produto.sku})`)
+              throw new Error(`Não há produto com o SKU especificado: (${produto.sku})`)
 
 
             /** Instead of using ctrl.getCatId, use the methods of the upcoming class "Categorias"
@@ -247,22 +224,26 @@ export default {
              */
             const tipos = await Promise.all(produto.tipos.map(async (t) => {
               const id = await ctrl.getCatId("Tipos", t);
-              return assertCatId(id, "tp", () => wrongCats.tipos.push(t));
+              if (!id) wrongCats.tipos.push(t);
+              return id ? await Cat.TipoMdl.findByPk(id) : null;
             }))
 
             const grupos = await Promise.all(produto.grupos.map(async (g) => {
               const id = await ctrl.getCatId("Grupos", g);
-              return assertCatId(id, "gp", () => wrongCats.grupos.push(g))
+              if (!id) wrongCats.grupos.push(g);
+              return id ? await Cat.GrupoMdl.findByPk(id) : null;
             }));
 
             const modelos = await Promise.all(produto.modelos.map(async (m) => {
               const id = await ctrl.getCatId("Modelos", m);
-              return assertCatId(id, "mo", () => wrongCats.modelos.push(m));
+              if (!id) wrongCats.modelos.push(m);
+              return id ? await Cat.MdloMdl.findByPk(id) : null;
             }));
 
             const marcas = await Promise.all(produto.marcas.map(async (m) => {
               const id = await ctrl.getCatId("Marcas", m);
-              return assertCatId(id, "ma", () => wrongCats.marcas.push(m));
+              if (!id) wrongCats.marcas.push(m);
+              return id ? await Cat.MarcaMdl.findByPk(id) : null;
             }));
 
             const subProduto = (produto.produto) ? await ctrl.findByUnique(produto.produto) : null;
@@ -271,11 +252,17 @@ export default {
             const fabricante = await ctrlFab.findByUnique(produto.fabricante);
 
             if (!fabricante)
-            throw new Error(`Você não pode atualizar um produto sem o fabricante! Produto: ${produto.sku}`);
+              throw new Error(`Você não pode atualizar um produto sem o fabricante! Produto: ${produto.sku}`);
 
             return await prodToUpdate.update({
-              ...produto, produto: subProduto, mercadoria: mercadoria, fabricante: fabricante,
-              tipos: tipos, grupos: grupos, modelos: modelos, marcas: marcas
+              ...produto,
+              produto: subProduto,
+              mercadoria: mercadoria,
+              fabricante: fabricante,
+              tipos: tipos.filter((v) => v!=null) as Cat.attributes<"default">[],
+              grupos: grupos.filter((v) => v!=null) as Cat.attributes<"default">[],
+              modelos: modelos.filter((v) => v!=null) as Cat.attributes<"default">[],
+              marcas: marcas.filter((v) => v!=null) as Cat.attributes<"default">[]
             });
           }))
 
@@ -284,42 +271,54 @@ export default {
 
         updated = await Promise.all(mercadorias.map(async (produto) => {
           const produtoId = await ctrl.getIdByUnique(produto.sku),
-          produtoToUpdate = await Produto.Mdl.findByPk(produtoId);
+            produtoToUpdate = await Produto.Mdl.findByPk(produtoId);
 
           if (!produtoToUpdate)
-          throw new Error(`Não há produto com o SKU especificado: (${produto.sku})`)
-          
-          produto.tipos = produto.tipos.map((v) => ({...v, nome: v.nome.toUpperCase()}));
-          produto.grupos = produto.grupos.map((v) => ({...v, nome: v.nome.toUpperCase()}));
-          produto.modelos = produto.modelos.map((v) => ({...v, nome: v.nome.toUpperCase()}));
-          produto.marcas = produto.marcas.map((v) => ({...v, nome: v.nome.toUpperCase()}));
-          
-          
+            throw new Error(`Não há produto com o SKU especificado: (${produto.sku})`)
+
+          produto.tipos = produto.tipos.map((v) => ({ ...v, nome: v.nome.toUpperCase() }));
+          produto.grupos = produto.grupos.map((v) => ({ ...v, nome: v.nome.toUpperCase() }));
+          produto.modelos = produto.modelos.map((v) => ({ ...v, nome: v.nome.toUpperCase() }));
+          produto.marcas = produto.marcas.map((v) => ({ ...v, nome: v.nome.toUpperCase() }));
+
+
           const fabricante = await ctrlFab.findByUnique(produto.fabricante.cnpj),
-          subProduto = (produto.produto) ? await ctrl.findByUnique(produto.produto.sku) : null,
-          mercadoria = (produto.mercadoria) ? await ctrlMerc.findByUnique(produto.mercadoria.produto.sku) : null,
-          tipos = await Promise.all(produto.tipos.map(async (t) => {
-            const id = await ctrl.getCatId(t.nome, "Tipos");
-            return assertCatId(id, "tp", () => wrongCats.tipos.push(t.nome));
-          })),
-          grupos = await Promise.all(produto.grupos.map(async (g) => {
-            const id = await ctrl.getCatId(g.nome, "Grupos");
-            return assertCatId(id, "gp", () => wrongCats.grupos.push(g.nome));
-          })),
-          marcas = await Promise.all(produto.marcas.map(async (m) => {
-            const id = await ctrl.getCatId(m.nome, "Marcas");
-            return assertCatId(id, "ma", () => wrongCats.marcas.push(m.nome));
-          })),
-          modelos = await Promise.all(produto.modelos.map(async (m) => {
-            const id = await ctrl.getCatId(m.nome, "Modelos");
-            return assertCatId(id, "mo", () => wrongCats.modelos.push(m.nome));
-          }));
+            subProduto = (produto.produto) ? await ctrl.findByUnique(produto.produto.sku) : null,
+            mercadoria = (produto.mercadoria) ? await ctrlMerc.findByUnique(produto.mercadoria.produto.sku) : null,
+            tipos = await Promise.all(produto.tipos.map(async (t) => {
+              const id = await ctrl.getCatId("Tipos", t.nome);
+              if (!id) wrongCats.tipos.push(t.nome);
+              return id ? await Cat.TipoMdl.findByPk(id) : null;
+            })),
+            grupos = await Promise.all(produto.grupos.map(async (g) => {
+              const id = await ctrl.getCatId("Grupos", g.nome);
+              if (!id) wrongCats.grupos.push(g.nome);
+              return id ? await Cat.GrupoMdl.findByPk(id) : null;
+            })),
+            marcas = await Promise.all(produto.marcas.map(async (m) => {
+              const id = await ctrl.getCatId("Marcas", m.nome);
+              if (!id) wrongCats.marcas.push(m.nome);
+              return id ? await Cat.MarcaMdl.findByPk(id) : null;
+            })),
+            modelos = await Promise.all(produto.modelos.map(async (m) => {
+              const id = await ctrl.getCatId("Modelos", m.nome);
+              if (!id) wrongCats.modelos.push(m.nome);
+              return id ? await Cat.MdloMdl.findByPk(id) : null;
+            }));
 
           if (!fabricante)
-          throw new Error(`Você não pode atualizar um produto sem o fabricante! Produto: ${produto.sku}`);
+            throw new Error(`Você não pode atualizar um produto sem o fabricante! Produto: ${produto.sku}`);
 
-          return await produtoToUpdate.update({...produto, fabricante: fabricante, tipos: tipos, grupos: grupos, marcas: marcas, modelos: modelos, produto: subProduto, 
-          mercadoria: mercadoria});
+          return await produtoToUpdate.update({
+            ...produto,
+            fabricante: fabricante,
+            tipos: tipos.filter((v) => v!=null) as Cat.attributes<"default">[],
+            grupos: grupos.filter((v) => v!=null) as Cat.attributes<"default">[],
+            marcas: marcas.filter((v) => v!=null) as Cat.attributes<"default">[],
+            modelos: modelos.filter((v) => v!=null) as Cat.attributes<"default">[],
+            produto: subProduto,
+            mercadoria: mercadoria
+          });
         }))
       } else {
         throw new Error("O parâmetro query object_type não foi satisfeito corretamente.");
@@ -327,10 +326,10 @@ export default {
       return res.send(`${ANSI_GREEN}Você atualizou um total de ${ANSI_RESET}${ANSI_MAGENTA}${updated.length} ${ANSI_GREEN}produtos no banco de dados${ANSI_RESET}` +
         `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} de produtos no arquivo.${ANSI_RESET}.
         Cheque as seguintes categorias (se nada houver, você escreveu todas corretamente.): 
-        ${ (!!!wrongCats.tipos.length) ? `tipos: ${wrongCats.tipos}` : "" })
-        ${ (!!!wrongCats.grupos.length) ? `grupos: ${wrongCats.grupos}` : "" })
-        ${ (!!!wrongCats.modelos.length) ? `modelos: ${wrongCats.modelos}` : "" })
-        ${ (!!!wrongCats.marcas.length) ? `marcas: ${wrongCats.marcas}` : "" })
+        ${(!!!wrongCats.tipos.length) ? `tipos: ${wrongCats.tipos}` : ""})
+        ${(!!!wrongCats.grupos.length) ? `grupos: ${wrongCats.grupos}` : ""})
+        ${(!!!wrongCats.modelos.length) ? `modelos: ${wrongCats.modelos}` : ""})
+        ${(!!!wrongCats.marcas.length) ? `marcas: ${wrongCats.marcas}` : ""})
       `);
 
     } catch (e) {
