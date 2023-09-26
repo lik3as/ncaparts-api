@@ -1,4 +1,4 @@
-import { Mercadoria, Produto, Kit } from "ncaparts-db";
+import { Mercadoria, Produto, Kit, Cat, Fabricante } from "ncaparts-db";
 
 import { Request, Response, NextFunction } from "express";
 import { ANSI_BLUE, ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET } from "../constants";
@@ -18,7 +18,7 @@ const ctrlKit = new KitController();
 export default {
   async get_mercs(req: Request, res: Response, next: NextFunction) {
     if (typeof req.query.s !== 'undefined' && req.query.s != '') return next();
-    if (typeof req.query.page === 'undefined') req.query.page = '0'
+    if (typeof req.query.offset === 'undefined') req.query.offset = '0'
     const productType = req.query.type?.toString().toUpperCase() as string | undefined;
 
     try {
@@ -32,7 +32,7 @@ export default {
         if (productsFilteredByType) return res.json(productsFilteredByType);
         else return res.status(400).send(`${ANSI_RED}Something went wrong with your type. Check if this type really exists.${ANSI_RESET}`);
       }
-      const allProducts = await ctrl.getOffsetBodies(25, 0);
+      const allProducts = await ctrl.getSome(20, +req.query.offset);
       res.json(allProducts);
     } catch (e) {
       return res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
@@ -202,7 +202,7 @@ export default {
                 merc, {
                 produto: produto,
                 kit: kit,
-                }
+              }
               );
 
               return await Mercadoria.Mdl.create({ ...mercAttrs, fk_produto: produto.id, fk_kit: kit?.id });
@@ -213,13 +213,18 @@ export default {
         const filteredAttrs = await ctrl.filter(mercadorias);
 
         created = await Mdl.bulkCreate(filteredAttrs, {
-          include: [{
-            model: Produto.Mdl,
-            as: "produto"
-          }, {
-            model: Kit.Mdl,
-            as: "kit"
-          }]
+          include: [
+            {
+              model: Produto.Mdl,
+              as: "produto"
+            }, {
+              model: Fabricante.Mdl,
+              as: "fabricante"
+            }, { model: Cat.TipoMdl, as: "tipos" }, { model: Cat.MarcaMdl, as: "marcas" }, { model: Cat.GrupoMdl, as: "grupos" }, { model: Cat.MdloMdl, as: "modelos" }
+            , {
+              model: Kit.Mdl,
+              as: "kit"
+            }]
         });
       }
       else {
