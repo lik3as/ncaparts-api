@@ -86,10 +86,10 @@ export default {
         created = await Promise.all(
           (await ctrl.filter(produtos))
             .map(async (produto) => {
-              const tipos = await Promise.all(produto.tipos.map(async (t) => { 
+              const tipos = await Promise.all(produto.tipos.map(async (t) => {
                 const id = await ctrl.getCatId("Tipos", t);
                 if (!id) wrongCats.tipos.push(t);
-                return id ? await Cat.TipoMdl.findByPk(id, {raw: true}) : null;
+                return id ? await Cat.TipoMdl.findByPk(id, { raw: true }) : null;
               }).filter((v, i, arr) => v != null && arr.indexOf(v) === i)) as Cat.attributes<"default">[]; /** Filtra categorias inexistentes e repetidas. */
 
               const grupos: (Cat.attributes | null)[] = await Promise.all(produto.grupos.map(async (g) => {
@@ -115,21 +115,21 @@ export default {
                 subProduto = (produto.produto) ? await ctrl.findByUnique(produto.produto) : null;
 
               if (!fabricante)
-              throw new Error(`Você não pode inserir  um produto sem um fabricante válido!
+                throw new Error(`Você não pode inserir  um produto sem um fabricante válido!
               Produto: ${produto.sku}
               Fabricante: ${produto.fabricante}`);
 
               const produtoToCreate = {
                 ...produto,
-                tipos: tipos.filter((v) => v!=null) as Cat.attributes<"default">[],
-                grupos: grupos.filter((v) => v!=null) as Cat.attributes<"default">[],
-                modelos: modelos.filter((v) => v!=null) as Cat.attributes<"default">[],
-                marcas: marcas.filter((v) => v!=null) as Cat.attributes<"default">[],
+                tipos: tipos.filter((v) => v != null) as Cat.attributes<"default">[],
+                grupos: grupos.filter((v) => v != null) as Cat.attributes<"default">[],
+                modelos: modelos.filter((v) => v != null) as Cat.attributes<"default">[],
+                marcas: marcas.filter((v) => v != null) as Cat.attributes<"default">[],
                 mercadoria: mercadoria,
                 produto: subProduto,
                 fabricante: fabricante
               }
-              
+
               const createdProduto = await Produto.Mdl.create({ ...produtoToCreate, fk_fabricante: fabricante.id, fk_produto: subProduto?.id });
               await createdProduto.$add("tipos", produtoToCreate.tipos.map((t) => t.id));
               await createdProduto.$add("marcas", produtoToCreate.marcas.map((m) => m.id));
@@ -146,7 +146,17 @@ export default {
 
         const filtered = await ctrl.filter(produtos);
 
-        created = await Produto.Mdl.bulkCreate(filtered);
+        created = await Produto.Mdl.bulkCreate(filtered, {
+          include: [
+            {
+              model: Produto.Mdl,
+              as: "produto"
+            }, {
+              model: Fabricante.Mdl,
+              as: "fabricante"
+            }, { model: Cat.TipoMdl, as: "tipos" }, { model: Cat.MarcaMdl, as: "marcas" }, { model: Cat.GrupoMdl, as: "grupos" }, { model: Cat.MdloMdl, as: "modelos" }
+          ]
+        });
       } else {
         throw new Error("O parâmetro query object_type não foi satisfeito corretamente.");
       }
@@ -259,10 +269,10 @@ export default {
               produto: subProduto,
               mercadoria: mercadoria,
               fabricante: fabricante,
-              tipos: tipos.filter((v) => v!=null) as Cat.attributes<"default">[],
-              grupos: grupos.filter((v) => v!=null) as Cat.attributes<"default">[],
-              modelos: modelos.filter((v) => v!=null) as Cat.attributes<"default">[],
-              marcas: marcas.filter((v) => v!=null) as Cat.attributes<"default">[]
+              tipos: tipos.filter((v) => v != null) as Cat.attributes<"default">[],
+              grupos: grupos.filter((v) => v != null) as Cat.attributes<"default">[],
+              modelos: modelos.filter((v) => v != null) as Cat.attributes<"default">[],
+              marcas: marcas.filter((v) => v != null) as Cat.attributes<"default">[]
             });
           }))
 
@@ -312,10 +322,10 @@ export default {
           return await produtoToUpdate.update({
             ...produto,
             fabricante: fabricante,
-            tipos: tipos.filter((v) => v!=null) as Cat.attributes<"default">[],
-            grupos: grupos.filter((v) => v!=null) as Cat.attributes<"default">[],
-            marcas: marcas.filter((v) => v!=null) as Cat.attributes<"default">[],
-            modelos: modelos.filter((v) => v!=null) as Cat.attributes<"default">[],
+            tipos: tipos.filter((v) => v != null) as Cat.attributes<"default">[],
+            grupos: grupos.filter((v) => v != null) as Cat.attributes<"default">[],
+            marcas: marcas.filter((v) => v != null) as Cat.attributes<"default">[],
+            modelos: modelos.filter((v) => v != null) as Cat.attributes<"default">[],
             produto: subProduto,
             mercadoria: mercadoria
           });
