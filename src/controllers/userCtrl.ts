@@ -2,7 +2,7 @@ import { Usuario } from 'ncaparts-db'
 import { ANSI_BLUE, ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET } from "../constants";
 import { Request, Response, NextFunction } from "express";
 
-const ctrl = new Usuario.UserCtrl();
+const ctrl = new Usuario.Ctrl();
 
 const on_error = (err: any) => {
   console.log('An error occurred while trying to access client route: \n' + 
