@@ -118,7 +118,7 @@ export default {
 
     try {
       if (!mercadoria)
-      throw new Error("Empty body.");
+        throw new Error("Empty body.");
 
       let createdInstance: Mercadoria.attributes<"default"> | null = null;
       if (query.object_type === "body") {
@@ -136,18 +136,18 @@ export default {
         const filteredInstance = await ctrl.filter(mercadoria);
 
         if (!filteredInstance)
-        throw new Error(`Esta mercadoria já foi registrada`);
+          throw new Error(`Esta mercadoria já foi registrada`);
 
         createdInstance = await Mdl.create({ ...filteredInstance, produto: produto, kit: kit });
       } else if (query.object_type === "attrs") {
         const mercadoria: Mercadoria.attributes<"creation"> = req.body;
-        
+
         const filteredInstance = await ctrl.filter(mercadoria);
 
         if (!filteredInstance)
-        throw new Error("Esta mercadoria já foi registrada");
+          throw new Error("Esta mercadoria já foi registrada");
 
-        createdInstance = await Mdl.create({...mercadoria, produto: mercadoria.produto, kit: mercadoria.kit})
+        createdInstance = await Mdl.create({ ...mercadoria, produto: mercadoria.produto, kit: mercadoria.kit })
       } else {
         throw new Error("O parâmetro query 'object_type' não foi satisfeito corretamente.")
       }
@@ -185,7 +185,7 @@ export default {
       let created: Mercadoria.attributes[] = [];
       if (query.object_type === "body") {
         const mercadorias: Mercadoria.body<string, string>[] = req.body;
-        const filteredAndConverted = await Promise.all(
+        created = await Promise.all(
           (await ctrl.filter(mercadorias))
             .map(async (merc)
               : Promise<Mercadoria.attributes<"creation">> => {
@@ -198,21 +198,29 @@ export default {
               if (!produto)
                 throw new Error("O produto refenciado não consta no banco de dados");
 
-              return {
-                ...merc,
+              const mercAttrs = Mercadoria.bodyToAttr(
+                merc, {
                 produto: produto,
                 kit: kit,
-              }
-            }));
+                }
+              );
 
-        created = await Mdl.bulkCreate(filteredAndConverted);
-
+              return await Mercadoria.Mdl.create({ ...mercAttrs, fk_produto: produto.id, fk_kit: kit?.id });
+            })
+        );
       } else if (query.object_type === "attrs") {
         const mercadorias: Mercadoria.attributes<"creation">[] = req.body;
-
         const filteredAttrs = await ctrl.filter(mercadorias);
 
-        created = await Mdl.bulkCreate(filteredAttrs);
+        created = await Mdl.bulkCreate(filteredAttrs, {
+          include: [{
+            model: Produto.Mdl,
+            as: "produto"
+          }, {
+            model: Kit.Mdl,
+            as: "kit"
+          }]
+        });
       }
       else {
         throw new Error("O parâmetro query 'object_type' não foi satisfeito corretamente.")
@@ -237,9 +245,9 @@ export default {
     const mercadorias: Mercadoria.body<
       string,
       string
-    >[] 
-    | Mercadoria.attributes<"creation">[]
-    | undefined = req.body;
+    >[]
+      | Mercadoria.attributes<"creation">[]
+      | undefined = req.body;
 
     try {
       if (!mercadorias)
@@ -292,7 +300,7 @@ export default {
               throw new Error(`Houve um erro ao tentar retornar a mercadoria de ID: ${mercId}`);
 
             const produto = await ctrlProd.findByUnique(merc.produto.sku),
-            kit = (merc.kit) ? await ctrlKit.findByUnique(merc.kit.nome) : null;
+              kit = (merc.kit) ? await ctrlKit.findByUnique(merc.kit.nome) : null;
 
             if (!produto)
               throw new Error(`Você está tentando atualizar a mercadoria com ID ${merc.id} sem uma referência de produto válida.`);
@@ -301,7 +309,7 @@ export default {
              * Checks if the update did nothing new. If so, null is returned, otherwise, function flows normally.
              */
             if (mercToUpdate.get({ plain: true }) === { ...merc, id: mercToUpdate.id, produto: produto, kit: kit } as Mercadoria.attributes<"default">)
-            return null;
+              return null;
 
             return await mercToUpdate.update({ ...merc, produto: produto, kit: kit });
           }))).filter((v) => v != null);
