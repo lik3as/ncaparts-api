@@ -3,15 +3,15 @@ import { Mercadoria, Produto, Kit } from "ncaparts-db";
 import { Request, Response, NextFunction } from "express";
 import { ANSI_BLUE, ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET } from "../constants";
 
-const Controller = Mercadoria.MercCtrl;
+const Controller = Mercadoria.Ctrl;
 const Mdl = Mercadoria.Mdl;
 const ctrl = new Controller();
 
-const ProductController = Produto.ProdCtrl;
+const ProductController = Produto.Ctrl;
 const ProdMdl = Produto.Mdl;
 const ctrlProd = new ProductController();
 
-const KitController = Kit.KitCtrl;
+const KitController = Kit.Ctrl;
 const KitMdl = Kit.Mdl;
 const ctrlKit = new KitController();
 
