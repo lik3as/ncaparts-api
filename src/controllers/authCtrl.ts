@@ -7,7 +7,7 @@ export default {
     const {username, passwd, email} = req.body;
 
     if (username == process.env.MASTER_NAME && passwd == process.env.MASTER_SECRET) {
-      const token = jwt.sign({username: username, passwd: passwd}, process.env.MASTER_AUTH_SECRET!, { expiresIn: "1h" })
+      const token = jwt.sign({username: username, passwd: passwd, email: email}, process.env.MASTER_AUTH_SECRET!, { expiresIn: "1h" })
       return res.cookie('token', token, { maxAge: 10000, httpOnly: true, secure: false }).status(200).send('Cookie Mestre Enviado'); 
     } 
 
