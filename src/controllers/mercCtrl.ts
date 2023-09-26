@@ -213,18 +213,24 @@ export default {
         const filteredAttrs = await ctrl.filter(mercadorias);
 
         created = await Mdl.bulkCreate(filteredAttrs, {
-          include: [
-            {
-              model: Produto.Mdl,
-              as: "produto"
-            }, {
-              model: Fabricante.Mdl,
-              as: "fabricante"
-            }, { model: Cat.TipoMdl, as: "tipos" }, { model: Cat.MarcaMdl, as: "marcas" }, { model: Cat.GrupoMdl, as: "grupos" }, { model: Cat.MdloMdl, as: "modelos" }
-            , {
-              model: Kit.Mdl,
-              as: "kit"
-            }]
+          include: [{
+            model: Kit.Mdl,
+            as: "kit"
+          }, {
+            model: Produto.Mdl,
+            as: "produto",
+            include: [
+              {
+                model: Fabricante.Mdl,
+                as: "fabricante",
+              },
+              {
+                model: Produto.Mdl,
+                as: "produto"
+              },
+              { model: Cat.TipoMdl, as: "tipos" }, { model: Cat.MarcaMdl, as: "marcas" }, { model: Cat.GrupoMdl, as: "grupos" }, { model: Cat.MdloMdl, as: "modelos" }
+            ]
+          }]
         });
       }
       else {
