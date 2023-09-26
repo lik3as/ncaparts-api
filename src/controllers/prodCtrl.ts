@@ -151,6 +151,10 @@ export default {
         created = await Produto.Mdl.bulkCreate(filtered, {
           include: [
             {
+              model: Mercadoria.Mdl,
+              as: "mercadoria"
+            },
+            {
               model: Produto.Mdl,
               as: "produto"
             }, {
