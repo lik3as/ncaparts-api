@@ -17,7 +17,7 @@ const ctrlKit = new KitController();
 
 export default {
   async get_mercs(req: Request, res: Response, next: NextFunction) {
-    if (typeof req.query.s !== 'undefined' && req.query.s != '') return next();
+    if (typeof req.query.sku !== 'undefined' && req.query.sku != '') return next();
     if (typeof req.query.offset === 'undefined') req.query.offset = '0'
     const productType = req.query.type?.toString().toUpperCase() as string | undefined;
 
@@ -35,65 +35,58 @@ export default {
       const allProducts = await ctrl.getSome(20, +req.query.offset);
       res.json(allProducts);
     } catch (e) {
-      return res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      return res.send(`${ANSI_RED}Houve um erro ao buscar as mercadorias. Erro: ${ANSI_RESET}
       ${e}`);
 
     }
   },
 
   async get_mercs_with_sku(req: Request, res: Response, next: NextFunction) {
-    if (typeof req.query.rel !== 'undefined') return next();
-    const sku: string | undefined = req.query.s?.toString();
+    const sku = req.query.sku;
 
     try {
-      if (!sku) {
-        return res.status(400).send("400 - Bad Request: Invalid SKU");
+      if (typeof req.query.sku !== 'string'){
+        throw new Error("400 - Bad Request: SKU não foi fornecido")
       }
+
+      const sku = req.query.sku;
 
       const mercadoria = await ctrl.findByUnique(sku);
       if (!mercadoria) {
-        return res.status(400).send("Bad Request: Inexistent SKU");
+        throw new Error("Bad Request: SKU inexistente");
       }
 
       return res.json(mercadoria);
     } catch (e) {
-      return res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      return res.status(400).send(`${ANSI_RED}Houve um erro ao buscar a mercadoria desejada (${sku}). Erro: ${ANSI_RESET}
       ${e}`);
 
     }
   },
 
-  async get_sugestions(req: Request, res: Response, next: NextFunction) {
-    const sku = req.query.s;
+  async get_related(req: Request, res: Response, next: NextFunction) {
+    const sku = req.query.sku;
 
     try {
       if (typeof sku !== 'string')
-        throw new Error(`${ANSI_RED}Was expect string, received ${ANSI_RESET}${ANSI_MAGENTA}${typeof sku}${ANSI_RESET}`)
+        throw new Error(`${ANSI_RED}O parâmetro query sku deve ser uma string! Foi enviado: ${ANSI_RESET}${ANSI_MAGENTA}${typeof sku}${ANSI_RESET}`)
 
       const produto = await ctrlProd.findByUnique(sku);
 
       if (!produto)
-        throw new Error(`This SKU (${sku}) does not refer to any product.`)
+        throw new Error(`Esse SKU não corresponde a nenhum produto.`)
 
       const relatedMercs = await ctrl.useScope({ method: 'find', param: 'related', args: sku }, true);
 
       if (!!!relatedMercs.length) {
-        /**
-         * Deixa apenas os IDs dos tipos não nulos
-         */
-        const tipos = produto.tipos.filter((t) => typeof t.nome === 'string').map((v) => v.id);
-
-        if (!tipos || tipos.length === 0) {
-          throw new Error("")
-        }
-
-        const relatedMercs = await ctrl.useScope({ method: 'join', param: 'tipo', args: tipos[0] });
+        const tipos = produto.tipos;
+        const relatedMercs = await ctrl.useScope({ method: 'join', param: 'tipo', args: tipos[0].id }, true);
         return res.json(relatedMercs);
       }
 
       return res.json(relatedMercs);
     } catch (e) {
-      return res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      return res.send(`${ANSI_RED}Houve um erro ao buscar as mercadorias relacionadas. Erro: ${ANSI_RESET}
       ${e}`);
     }
   },
