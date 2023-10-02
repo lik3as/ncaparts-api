@@ -6,7 +6,6 @@ import authUser from './routes/auth/authUser';
 
 import util from './middleware/util'
 import prod from './routes/tables/router.prod';
-import tables from './routes/router.manager';
 import merc from './routes/tables/router.merc';
 import { Database } from 'ncaparts-db';
 
@@ -23,7 +22,6 @@ app.use(cookies());
 app.use(util.allow_origin);
 app.use(util.info);
 
-app.use(tables);
 app.use(prod);
 app.use(cli);
 app.use(merc);
