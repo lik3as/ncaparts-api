@@ -19,6 +19,10 @@ export default {
   async get_mercs(req: Request, res: Response, next: NextFunction) {
     if (typeof req.query.sku !== 'undefined' && req.query.sku != '') return next();
     if (typeof req.query.offset === 'undefined') req.query.offset = '0'
+    if (typeof req.query.limit === 'undefined') req.query.limit = '15'
+
+    const limit = +req.query.limit;
+    const offset = +req.query.offset;
     const productType = req.query.type?.toString().toUpperCase() as string | undefined;
 
     try {
@@ -27,12 +31,12 @@ export default {
         if (!productTypeId)
           throw new Error("The ID doesn't refer to any existent Type on the database.");
 
-        const productsFilteredByType = await ctrl.useScope({ method: 'join', param: 'tipo', args: productTypeId });
+        const productsFilteredByType = await ctrl.useScope({ method: 'join', param: 'tipo', args: productTypeId }, true);
 
         if (productsFilteredByType) return res.json(productsFilteredByType);
         else return res.status(400).send(`${ANSI_RED}Something went wrong with your type. Check if this type really exists.${ANSI_RESET}`);
       }
-      const allProducts = await ctrl.getSome(20, +req.query.offset);
+      const allProducts = await ctrl.getSome(limit, offset);
       res.json(allProducts);
     } catch (e) {
       return res.send(`${ANSI_RED}Houve um erro ao buscar as mercadorias. Erro: ${ANSI_RESET}
