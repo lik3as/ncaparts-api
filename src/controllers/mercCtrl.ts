@@ -19,7 +19,7 @@ export default {
   async get_mercs(req: Request, res: Response, next: NextFunction) {
     if (typeof req.query.sku !== 'undefined' && req.query.sku != '') return next();
     if (typeof req.query.offset === 'undefined') req.query.offset = '0'
-    if (typeof req.query.limit === 'undefined') req.query.limit = '15'
+    if (typeof req.query.limit === 'undefined') req.query.limit = '10'
 
     const limit = +req.query.limit;
     const offset = +req.query.offset;
@@ -31,7 +31,10 @@ export default {
         if (!productTypeId)
           throw new Error("The ID doesn't refer to any existent Type on the database.");
 
-        const productsFilteredByType = await ctrl.useScope({ method: 'join', param: 'tipo', args: productTypeId }, true);
+        const productsFilteredByType = await ctrl.useScope({ method: 'join', param: 'tipo', args: productTypeId }).findAll({
+          limit: limit,
+          offset: offset
+        });
 
         if (productsFilteredByType) return res.json(productsFilteredByType);
         else return res.status(400).send(`${ANSI_RED}Something went wrong with your type. Check if this type really exists.${ANSI_RESET}`);
@@ -69,7 +72,12 @@ export default {
   },
 
   async get_related(req: Request, res: Response, next: NextFunction) {
+    if (!req.query.limit) req.query.limit = '10';
+    if (!req.query.offset) req.query.offset = '0';
+
     const sku = req.query.sku;
+    const limit = +req.query.limit;
+    const offset = +req.query.offset;
 
     try {
       if (typeof sku !== 'string')
@@ -80,11 +88,14 @@ export default {
       if (!produto)
         throw new Error(`Esse SKU não corresponde a nenhum produto.`)
 
-      const relatedMercs = await ctrl.useScope({ method: 'find', param: 'related', args: sku }, true);
+      const relatedMercs = await ctrl.useScope({ method: 'find', param: 'related', args: sku }).findAll();
 
       if (!!!relatedMercs.length) {
         const tipos = produto.tipos;
-        const relatedMercs = await ctrl.useScope({ method: 'join', param: 'tipo', args: tipos[0].id }, true);
+        const relatedMercs = await ctrl.useScope({ method: 'join', param: 'tipo', args: tipos[0].id }).findAll({
+          limit: limit,
+          offset: offset
+        });
         return res.json(relatedMercs);
       }
 
