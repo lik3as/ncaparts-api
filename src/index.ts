@@ -8,6 +8,8 @@ import util from './middleware/util'
 import prod from './routes/tables/router.prod';
 import merc from './routes/tables/router.merc';
 import cats from './routes/tables/router.cats';
+import index from './routes';
+
 import { Database } from 'ncaparts-db';
 
 if(process.argv.includes('-f')) Database.delaySync({after: 4, force: true});
@@ -23,6 +25,7 @@ app.use(cookies());
 app.use(util.allow_origin);
 app.use(util.info);
 
+app.use(index);
 app.use(cats);
 app.use(prod);
 app.use(cli);
