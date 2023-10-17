@@ -8,6 +8,7 @@ import util from './middleware/util'
 import prod from './routes/tables/router.prod';
 import merc from './routes/tables/router.merc';
 import cats from './routes/tables/router.cats';
+import fab from './routes/tables/router.fab';
 import index from './routes';
 
 import { Database } from 'ncaparts-db';
@@ -30,6 +31,7 @@ app.use(cats);
 app.use(prod);
 app.use(cli);
 app.use(merc);
+app.use(fab);
 app.use(authUser);
 
 const port = process.env.PORT || 8080;
