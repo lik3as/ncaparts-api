@@ -169,7 +169,6 @@ export default {
 
   /**
    * @param req.query
-   * 
    * u -> should update or not. Boolean by existence (undefined or not undefined);
    * 
    * object_type -> the body object type. It must be the Mercadoria.*body* or Mercadoria.*attrs* type.
@@ -185,8 +184,7 @@ export default {
 
     try {
       if (!mercadorias || mercadorias.length == 0)
-        throw new Error("Body is empty.");
-
+        throw new Error("O corpo da requisição está vazio.")
       /** 
        * @var created will be fulfilled in one of the two conditions;
        */
@@ -245,11 +243,11 @@ export default {
         throw new Error("O parâmetro query 'object_type' não foi satisfeito corretamente.")
       }
 
-      return res.send(`${ANSI_GREEN}Um total de ${ANSI_RESET}${created.length}${ANSI_GREEN} mercadorias foram adicionadas.${ANSI_RESET}
+      res.send(`${ANSI_GREEN}Um total de ${ANSI_RESET}${created.length}${ANSI_GREEN} mercadorias foram adicionadas.${ANSI_RESET}
       ${ANSI_GREEN}Haviam ${ANSI_BLUE}${mercadorias.length}${ANSI_RESET}${ANSI_GREEN}mercadorias no objeto${ANSI_RESET}`)
 
     } catch (e) {
-      res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      res.send(`${ANSI_RED}Houve um erro ao criar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
       ${e}`);
     }
   },
