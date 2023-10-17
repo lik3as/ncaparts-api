@@ -83,7 +83,7 @@ export default {
 
       if (query.object_type === "body") {
         const produtos: Produto.body<string, string, string, string[], string[], string[], string[]>[] = req.body;
-        created = await Promise.all(
+        created = (await Promise.all(
           (await ctrl.filter(produtos))
             .map(async (produto) => {
               const tipos = await Promise.all(produto.tipos.map(async (t) => { 
@@ -132,16 +132,20 @@ export default {
                 }
               )
               
-              const createdProduto = await Produto.Mdl.create({ ...produtoToCreate, fk_fabricante: fabricante.id, fk_produto: subProduto?.id });
-              await createdProduto.$add("tipos", produtoToCreate.tipos.map((t) => t.id!));
-              await createdProduto.$add("marcas", produtoToCreate.marcas.map((m) => m.id!));
-              await createdProduto.$add("modelos", produtoToCreate.modelos.map((m) => m.id!));
-              await createdProduto.$add("grupos", produtoToCreate.grupos.map((g) => g.id!));
+              try {
+                const createdProduto = await Produto.Mdl.create({ ...produtoToCreate, fk_fabricante: fabricante.id, fk_produto: subProduto?.id });
+                await createdProduto.$add("tipos", produtoToCreate.tipos.map((t) => t.id!));
+                await createdProduto.$add("marcas", produtoToCreate.marcas.map((m) => m.id!));
+                await createdProduto.$add("modelos", produtoToCreate.modelos.map((m) => m.id!));
+                await createdProduto.$add("grupos", produtoToCreate.grupos.map((g) => g.id!));
 
-              return createdProduto;
+                return createdProduto;
+              } catch (e) {
+                return null
+              }
             }
-            )
-        );
+          )
+        )).filter((v) => v != null) as Produto.attributes<"default">[];
 
       } else if (query.object_type === "attrs") {
         const produtos: Produto.attributes<"creation">[] = req.body;
@@ -203,7 +207,7 @@ export default {
 
     try {
       if (!produtos)
-        throw new Error("Body is empty.");
+        throw new Error("O corpo da requisição está vazio.");
 
       let updated: Produto.attributes[] = [];
       const wrongCats: cats = { tipos: [], grupos: [], marcas: [], modelos: [] };
@@ -361,7 +365,7 @@ export default {
 
     try {
       if (!catOrCats)
-        throw new Error("Body is empty.");
+        throw new Error("O corpo da requisição está vazio.");
 
       if (Array.isArray(catOrCats)) {
 
