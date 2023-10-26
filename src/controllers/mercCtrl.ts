@@ -89,8 +89,8 @@ export default {
         throw new Error(`Esse SKU não corresponde a nenhum produto.`)
 
       const relatedMercs = await ctrl.useScope({ method: 'find', param: 'related', args: sku }).findAll();
-
-      if (!!!relatedMercs.length) {
+  
+      if (relatedMercs.length == 0) {
         const tipos = produto.tipos;
         const relatedMercs = await ctrl.useScope({ method: 'join', param: 'tipo', args: tipos[0].id }).findAll({
           limit: limit,
