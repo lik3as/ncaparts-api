@@ -87,25 +87,25 @@ export default {
           (await ctrl.filter(produtos))
             .map(async (produto) => {
               const tipos = await Promise.all(produto.tipos.map(async (t) => { 
-                const id = await ctrl.getCatId("Tipos", t);
+                const id = await ctrl.getCatId("Tipos", t.toUpperCase());
                 if (!id) wrongCats.tipos.push(t);
                 return id ? await Cat.TipoMdl.findByPk(id, {raw: true}) : null;
               }).filter((v, i, arr) => v != null && arr.indexOf(v) === i)) as Cat.attributes<"default">[]; /** Filtra categorias inexistentes e repetidas. */
 
               const grupos: (Cat.attributes | null)[] = await Promise.all(produto.grupos.map(async (g) => {
-                const id = await ctrl.getCatId("Grupos", g);
+                const id = await ctrl.getCatId("Grupos", g.toUpperCase());
                 if (!id) wrongCats.grupos.push(g);
                 return id ? await Cat.GrupoMdl.findByPk(id) : null;
               }).filter((v, i, arr) => v != null && arr.indexOf(v) === i)) as Cat.attributes<"default">[]; /** Filtra categorias inexistentes e repetidas. */
 
               const modelos: (Cat.attributes | null)[] = await Promise.all(produto.modelos.map(async (m) => {
-                const id = await ctrl.getCatId("Modelos", m);
+                const id = await ctrl.getCatId("Modelos", m.toUpperCase());
                 if (!id) wrongCats.modelos.push(m);
                 return id ? await Cat.MdloMdl.findByPk(id) : null;
               }).filter((v, i, arr) => v != null && arr.indexOf(v) === i)) as Cat.attributes<"default">[]; /** Filtra categorias inexistentes e repetidas. */
 
               const marcas = await Promise.all(produto.marcas.map(async (m) => {
-                const id = await ctrl.getCatId("Marcas", m);
+                const id = await ctrl.getCatId("Marcas", m.toUpperCase());
                 if (!id) wrongCats.marcas.push(m);
                 return id ? await Cat.MarcaMdl.findByPk(id) : null;
               }).filter((v, i, arr) => v != null && arr.indexOf(v) === i)) as Cat.attributes<"default">[]; /** Filtra categorias inexistentes e repetidas. */
