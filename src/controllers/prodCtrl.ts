@@ -1,6 +1,7 @@
 import { Cat, Fabricante, Mercadoria, Produto } from 'ncaparts-db'
 import { ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET } from "../constants";
 import { Request, Response, NextFunction } from "express";
+import { ForeignKeyConstraintError } from "sequelize"
 
 const ctrl = new Produto.Ctrl();
 const ctrlMerc = new Mercadoria.Ctrl();
@@ -86,10 +87,10 @@ export default {
         created = (await Promise.all(
           (await ctrl.filter(produtos))
             .map(async (produto) => {
-              const tipos = await Promise.all(produto.tipos.map(async (t) => { 
+              const tipos = await Promise.all(produto.tipos.map(async (t) => {
                 const id = await ctrl.getCatId("Tipos", t.toUpperCase());
                 if (!id) wrongCats.tipos.push(t);
-                return id ? await Cat.TipoMdl.findByPk(id, {raw: true}) : null;
+                return id ? await Cat.TipoMdl.findByPk(id, { raw: true }) : null;
               }).filter((v, i, arr) => v != null && arr.indexOf(v) === i)) as Cat.attributes<"default">[]; /** Filtra categorias inexistentes e repetidas. */
 
               const grupos: (Cat.attributes | null)[] = await Promise.all(produto.grupos.map(async (g) => {
@@ -115,23 +116,23 @@ export default {
                 subProduto = (produto.produto) ? await ctrl.findByUnique(produto.produto) : null;
 
               if (!fabricante)
-              throw new Error(`Você não pode inserir  um produto sem um fabricante válido!
+                throw new Error(`Você não pode inserir  um produto sem um fabricante válido!
               Produto: ${produto.sku}
               Fabricante: ${produto.fabricante}`);
 
               const produtoToCreate = Produto.bodyToAttr(
                 produto,
                 {
-                  tipos: tipos.filter((v) => v!=null) as Cat.attributes<"default">[],
-                  grupos: grupos.filter((v) => v!=null) as Cat.attributes<"default">[],
-                  modelos: modelos.filter((v) => v!=null) as Cat.attributes<"default">[],
-                  marcas: marcas.filter((v) => v!=null) as Cat.attributes<"default">[],
+                  tipos: tipos.filter((v) => v != null) as Cat.attributes<"default">[],
+                  grupos: grupos.filter((v) => v != null) as Cat.attributes<"default">[],
+                  modelos: modelos.filter((v) => v != null) as Cat.attributes<"default">[],
+                  marcas: marcas.filter((v) => v != null) as Cat.attributes<"default">[],
                   mercadoria: mercadoria,
                   produto: subProduto,
                   fabricante: fabricante
                 }
               )
-              
+
               try {
                 const createdProduto = await Produto.Mdl.create({ ...produtoToCreate, fk_fabricante: fabricante.id, fk_produto: subProduto?.id });
                 await createdProduto.$add("tipos", produtoToCreate.tipos.map((t) => t.id!));
@@ -144,7 +145,7 @@ export default {
                 return null
               }
             }
-          )
+            )
         )).filter((v) => v != null) as Produto.attributes<"default">[];
 
       } else if (query.object_type === "attrs") {
@@ -164,7 +165,7 @@ export default {
             }, {
               model: Fabricante.Mdl,
               as: "fabricante"
-            }, {model: Cat.TipoMdl, as: "tipos"}, {model: Cat.MarcaMdl, as: "marcas"}, {model: Cat.GrupoMdl, as: "grupos"}, {model: Cat.MdloMdl, as: "modelos"}
+            }, { model: Cat.TipoMdl, as: "tipos" }, { model: Cat.MarcaMdl, as: "marcas" }, { model: Cat.GrupoMdl, as: "grupos" }, { model: Cat.MdloMdl, as: "modelos" }
           ]
         });
       } else {
@@ -279,10 +280,10 @@ export default {
               produto: subProduto,
               mercadoria: mercadoria,
               fabricante: fabricante,
-              tipos: tipos.filter((v) => v!=null) as Cat.attributes<"default">[],
-              grupos: grupos.filter((v) => v!=null) as Cat.attributes<"default">[],
-              modelos: modelos.filter((v) => v!=null) as Cat.attributes<"default">[],
-              marcas: marcas.filter((v) => v!=null) as Cat.attributes<"default">[]
+              tipos: tipos.filter((v) => v != null) as Cat.attributes<"default">[],
+              grupos: grupos.filter((v) => v != null) as Cat.attributes<"default">[],
+              modelos: modelos.filter((v) => v != null) as Cat.attributes<"default">[],
+              marcas: marcas.filter((v) => v != null) as Cat.attributes<"default">[]
             })
           }))
 
@@ -332,10 +333,10 @@ export default {
           return await produtoToUpdate.update({
             ...produto,
             fabricante: fabricante,
-            tipos: tipos.filter((v) => v!=null) as Cat.attributes<"default">[],
-            grupos: grupos.filter((v) => v!=null) as Cat.attributes<"default">[],
-            marcas: marcas.filter((v) => v!=null) as Cat.attributes<"default">[],
-            modelos: modelos.filter((v) => v!=null) as Cat.attributes<"default">[],
+            tipos: tipos.filter((v) => v != null) as Cat.attributes<"default">[],
+            grupos: grupos.filter((v) => v != null) as Cat.attributes<"default">[],
+            marcas: marcas.filter((v) => v != null) as Cat.attributes<"default">[],
+            modelos: modelos.filter((v) => v != null) as Cat.attributes<"default">[],
             produto: subProduto,
             mercadoria: mercadoria
           });
@@ -378,7 +379,7 @@ export default {
 
         const created = await ctrl.createCategoria(req.params.cat, uppercasedCats) as Cat.attributes[];
 
-        return res.send(`${ANSI_GREEN}Você registrou um total de ${ANSI_RESET}${ANSI_MAGENTA}${created.length} ${ANSI_GREEN}no banco de dados${ANSI_RESET}` +
+        return res.send(`${ANSI_GREEN}Você registrou um total de ${ANSI_RESET}${ANSI_MAGENTA}${created.length}${ANSI_RESET} ${ANSI_GREEN}no banco de dados${ANSI_RESET}` +
           `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} produtos no arquivo.${ANSI_RESET}`);
       }
 
@@ -390,6 +391,34 @@ export default {
       res.send(`${ANSI_RED}Houve um erro ao inserir os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
       ${e}`);
     }
+  },
+
+  /**
+   * need docs
+   * @param req.query.sku is the unique;
+   */
+  async delete_produto(req: Request, res: Response) {
+    const query = req.query;
+
+    let destroyedRows = 0;
+    try {
+      if (typeof query.sku !== "string") 
+      throw new Error("O SKU fornecido não foi uma string. " + `(${typeof query.sku})`);
+
+      const sku = query.sku;
+      const id = await ctrl.getIdByUnique(sku);
+
+      if (!id)
+      throw new Error("Este produto não existe no banco de dados. " + `(${sku})`);
+
+      destroyedRows = await Mdl.destroy({where: { id: id } });
+
+    } catch (e) {
+      return res.json(`${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      ${e}`)
+    }
+    res.json(`${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`);
+
   },
 
   async get_categorias(req: Request, res: Response) {
