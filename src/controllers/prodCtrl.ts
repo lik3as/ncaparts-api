@@ -421,6 +421,55 @@ export default {
 
   },
 
+  /**
+   * need docs
+   * todo -> cat is confusing, must change to "type" or something, then, "name" must be "cat"
+   * @param req.query.name is the unique;
+   * @param req.query.cat is the cat;
+   */
+  async delete_cat(req: Request, res: Response) {
+    const query = req.query;
+    const params = req.params;
+    
+    let destroyedRows = 0;
+    try {
+      if (typeof query.name !== 'string')
+      throw new Error("O nome fornecido não foi uma string. " +  `(${typeof query.name})`);
+
+      if (typeof params.cat !== 'string')
+      throw new Error("A categoria fornecida não foi uma string. " +  `(${typeof query.name})`);
+
+      const name = query.name;
+      const id = await ctrl.getCatId(params.cat, name);
+
+      if (!id)
+      throw new Error("Não foi encontrada nenhuma categoria com este nome");
+
+      switch (params.cat) {
+        case "Tipos": {
+          destroyedRows = await Cat.TipoMdl.destroy({ where: {id: id } });
+          break;
+        }
+        case "Grupos": {
+          destroyedRows = await Cat.GrupoMdl.destroy({ where: {id: id } });
+          break;
+        }
+        case "Marcas": {
+          destroyedRows = await Cat.MarcaMdl.destroy({ where: {id: id } });
+          break;
+        }
+        case "Modelos": {
+          destroyedRows = await Cat.MdloMdl.destroy({ where: {id: id } });
+          break;
+        }
+      }
+    } catch (e) {
+      return res.json(`${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      ${e}`)
+    }
+    res.json(`${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`);
+  }, 
+
   async get_categorias(req: Request, res: Response) {
     return res.json(await ctrl.getCats(req.params.cat).catch(on_error));
   },
@@ -428,6 +477,7 @@ export default {
   async get_cat_columns(req: Request, res: Response) {
     return res.json(ctrl.Model.getAttributes());
   },
+
 
   async get_columns(req: Request, res: Response) {
     return res.json(ctrl.Model.getAttributes())
