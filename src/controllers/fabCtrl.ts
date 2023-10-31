@@ -17,13 +17,16 @@ export default {
     if (query.limit !== 'string') query.limit = '10'
     if (query.offset !== 'string') query.offset = '0';
 
+    let fabricantes: Fabricante.attributes<"default">[] = [];
     try {
-      const fabricantes = await Mdl.findAll({limit: +query.limit, offset: +query.offset});
-      res.json(fabricantes);
+      fabricantes = await Mdl.findAll({limit: +query.limit, offset: +query.offset});
     } catch (e) {
-      res.send(`${ANSI_RED}Houve um erro ao retornar os fabricantes. Erro: ${ANSI_RESET}
-      ${e}`)
+      res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao retornar os fabricantes. ${ANSI_RESET}`
+      })
     }
+    res.json(fabricantes);
 
   },
 
@@ -61,13 +64,17 @@ export default {
         throw new Error("O parâmetro query object_type não foi satisfeito corretamente.")
       }
 
-      res.send(`${ANSI_GREEN}Um total de ${ANSI_RESET}${created.length}${ANSI_GREEN} mercadorias foram adicionadas.${ANSI_RESET}${ANSI_GREEN}
-      Haviam ${ANSI_BLUE}${fabricantes.length}${ANSI_RESET}${ANSI_GREEN} mercadorias no objeto${ANSI_RESET}`);
-
     } catch(e) {
-      res.send(`${ANSI_RED}Houve um erro ao criar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`);
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao criar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
+      });
     }
+
+    res.json({
+      msg: `${ANSI_GREEN}Um total de ${ANSI_RESET}${created.length}${ANSI_GREEN} mercadorias foram adicionadas.${ANSI_RESET}${ANSI_GREEN}
+      Haviam ${ANSI_BLUE}${fabricantes.length}${ANSI_RESET}${ANSI_GREEN} mercadorias no objeto${ANSI_RESET}`
+    });
 
 
   },
@@ -87,11 +94,15 @@ export default {
 
       destroyedRows = await Mdl.destroy({where: {id: id}});
     } catch (e) { 
-      return res.json(`${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`);
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
+      });
       
     }
-    res.json(`${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`);
+    res.json({
+      msg: `${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`
+    });
   },
 
   async updateMany(req: Request, res: Response, next: NextFunction) {

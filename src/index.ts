@@ -1,7 +1,7 @@
 import express from 'express'
 import cookies from 'cookie-parser'
 
-import cli from './routes/tables/router.cli';
+import usr from './routes/tables/router.usr';
 import authUser from './routes/auth/authUser';
 
 import util from './middleware/util'
@@ -29,7 +29,7 @@ app.use(util.info);
 app.use(index);
 app.use(cats);
 app.use(prod);
-app.use(cli);
+app.use(usr);
 app.use(merc);
 app.use(fab);
 app.use(authUser);
