@@ -96,6 +96,27 @@ export default {
     }
   },
 
+  async delete_instance (req: Request, res: Response) {
+    const query = req.query;
+
+    let destroyedRows = 0;
+    try {
+      if (typeof query.email !== "string")
+      throw new Error("O email fornecido não foi uma string. " + `(${query.email})`);
+
+      const id = await ctrl.getIdByUnique(query.email);
+
+      if (!id)
+      throw new Error("Não há nenhum registro de usuário com o email " + `(${query.email})`);
+
+      destroyedRows = await Usuario.Mdl.destroy({where: {id: id}});
+    } catch (e) {
+      return res.json(`${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      ${e}`)
+    }
+    res.json(`${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`);
+  },
+
   async get_columns(req: Request, res: Response) {
     return res.json(Usuario.Mdl.getAttributes())
   }
