@@ -29,7 +29,7 @@ export default {
       if (productType) {
         const productTypeId = await ctrlProd.getCatId("Tipo", productType);
         if (!productTypeId)
-          throw new Error("The ID doesn't refer to any existent Type on the database.");
+          throw new Error("O Tipo com o nome indicado não existe no banco de dados.");
 
         const productsFilteredByType = await ctrl.useScope({ method: 'join', param: 'tipo', args: productTypeId }).findAll({
           limit: limit,
