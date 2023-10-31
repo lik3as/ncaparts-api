@@ -343,6 +343,27 @@ export default {
     }
   },
 
+  async delete_instance(req: Request, res: Response) {
+    const query = req.query;
+
+    let destroyedRows = 0;
+    try {
+      if (typeof query.sku !== "string") 
+      throw new Error("O SKU fornecido não foi uma string. " + `(${typeof query.sku})`);
+
+      const id = await ctrl.getIdByUnique(query.sku);
+
+      if (!id)
+      throw new Error("Esta mercadoria não existe no banco de dados. " + `(${query.sku})`);
+
+      destroyedRows = await Mdl.destroy({where: {id: id}});
+    } catch (e) {
+      return res.json(`${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+      ${e}`)
+    }
+    res.json(`${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`);
+  },
+
   async get_columns(req: Request, res: Response) {
     return res.json(ctrl.Model.getAttributes());
   },
