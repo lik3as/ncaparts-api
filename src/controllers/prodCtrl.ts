@@ -493,8 +493,7 @@ export default {
     } catch (e) {
       return res.status(500).json({
         error: (e as any).toString(),
-        msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-        ${e}`
+        msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda.${ANSI_RESET}`
       })
     }
     res.status(200).json({
