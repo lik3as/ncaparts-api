@@ -15,7 +15,7 @@ export default {
       res.json(await ctrl.getAllBodies())
     } catch (e) {
       res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_GREEN}Houve um erro ao retornar todos os usuários.`
       })
     }
@@ -54,7 +54,7 @@ export default {
       }
     } catch (e) {
       res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda.${ANSI_RESET}`
       });
     }
@@ -99,7 +99,7 @@ export default {
       }
     } catch (e) {
       res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda.${ANSI_RESET}`
       });
     }
@@ -125,7 +125,7 @@ export default {
       destroyedRows = await Usuario.Mdl.destroy({ where: { id: id } });
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda.${ANSI_RESET}`
       })
     }

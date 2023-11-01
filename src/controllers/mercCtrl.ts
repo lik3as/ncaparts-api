@@ -44,7 +44,7 @@ export default {
       else allProducts = await ctrl.getSome(limit, offset);
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao buscar as mercadorias. ${ANSI_RESET}`
       });
     }
@@ -69,7 +69,7 @@ export default {
 
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao buscar a mercadoria desejada (${sku}). ${ANSI_RESET}`
       });
     
@@ -108,7 +108,7 @@ export default {
       return res.json(relatedMercs);
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao buscar as mercadorias relacionadas. ${ANSI_RESET}`
       });
     }
@@ -170,7 +170,7 @@ export default {
 
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
       });
     }
@@ -258,7 +258,7 @@ export default {
 
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao criar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
       });
     }
@@ -353,7 +353,7 @@ export default {
 
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
       });
     }
@@ -380,7 +380,7 @@ export default {
       destroyedRows = await Mdl.destroy({where: {id: id}});
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
       })
     }

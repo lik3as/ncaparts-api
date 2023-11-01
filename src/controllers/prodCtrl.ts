@@ -36,7 +36,7 @@ export default {
       res.status(200).json(await ctrl.getSome(limit, offset));
     } catch (e) {
       res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RESET}Houve um erro ao retornar os produtos${ANSI_RESET}`
       });
     }
@@ -58,7 +58,7 @@ export default {
 
     } catch (e) {
       return res.status(200).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao consultar o produto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
         ${e}`
       });
@@ -185,7 +185,7 @@ export default {
 
     } catch (e) {
       res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao inserir os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
       });
 
@@ -361,7 +361,7 @@ export default {
 
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
       });
     }
@@ -408,7 +408,7 @@ export default {
 
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao inserir os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
       })
     }
@@ -440,7 +440,7 @@ export default {
 
     } catch (e) {
       return res.json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
       })
     }
@@ -492,7 +492,7 @@ export default {
       }
     } catch (e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
         ${e}`
       })
@@ -507,7 +507,7 @@ export default {
       res.json(await ctrl.getCats(req.params.cat));
     } catch (e) {
       res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         message: `${ANSI_RED}Ocorreu um erro ao tentar retornar as categorias especificadas.${ANSI_RESET}`
       })
     }

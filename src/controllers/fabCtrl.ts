@@ -22,7 +22,7 @@ export default {
       fabricantes = await Mdl.findAll({limit: +query.limit, offset: +query.offset});
     } catch (e) {
       res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao retornar os fabricantes. ${ANSI_RESET}`
       })
     }
@@ -66,7 +66,7 @@ export default {
 
     } catch(e) {
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao criar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
       });
     }
@@ -95,7 +95,7 @@ export default {
       destroyedRows = await Mdl.destroy({where: {id: id}});
     } catch (e) { 
       return res.status(500).json({
-        error: e,
+        error: (e as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda.${ANSI_RESET}`
       });
       
