@@ -32,7 +32,14 @@ export default {
 
     const offset: number | undefined = +(req.query.offset ?? 0) || undefined;
     const limit: number | undefined = +(req.query.limit ?? 0) || undefined;
-    return res.json(await ctrl.getSome(limit, offset).catch(on_error));
+    try {
+      res.status(200).json(await ctrl.getSome(limit, offset));
+    } catch (e) {
+      res.status(500).json({
+        error: e,
+        msg: `${ANSI_RESET}Houve um erro ao retornar os produtos${ANSI_RESET}`
+      });
+    }
   },
 
   async count(req: Request, res: Response, next: NextFunction) {
@@ -47,13 +54,17 @@ export default {
 
     try {
       if (!produto)
-        throw new Error("Este SKU não corresponde a nenhum produto: " + sku);
+      throw new Error("Este SKU não corresponde a nenhum produto: " + sku);
 
-      res.json(produto);
     } catch (e) {
-      res.send(`${ANSI_RED}Houve um erro ao consultar o produto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`);
+      return res.status(200).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao consultar o produto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+        ${e}`
+      });
     }
+
+    res.status(200).json(produto);
   },
 
 
@@ -75,12 +86,12 @@ export default {
         | Produto.attributes<"creation">)[]
       | undefined = req.body;
 
+    const wrongCats: cats = { tipos: [], grupos: [], marcas: [], modelos: [] };
+    let created: Produto.attributes<"default">[] = [];
     try {
       if (!produtos)
         throw new Error("O corpo da requisição não pode estar vazio.");
 
-      const wrongCats: cats = { tipos: [], grupos: [], marcas: [], modelos: [] };
-      let created: Produto.attributes<"default">[] = [];
 
       if (query.object_type === "body") {
         const produtos: Produto.body<string, string, string, string[], string[], string[], string[]>[] = req.body;
@@ -172,20 +183,23 @@ export default {
         throw new Error("O parâmetro query object_type não foi satisfeito corretamente.");
       }
 
-      return res.send(`${ANSI_GREEN}Você registrou um total de ${ANSI_RESET}${ANSI_MAGENTA}${created.length} ${ANSI_GREEN}produtos no banco de dados${ANSI_RESET}` +
-        `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} de produtos no arquivo.${ANSI_RESET}.
-        Cheque as seguintes categorias (se nada houver, você escreveu todas corretamente.): 
-        ${(wrongCats.tipos.length > 0) ? `tipos: ${wrongCats.tipos}` : ""}
-        ${(wrongCats.grupos.length > 0) ? `grupos: ${wrongCats.grupos}` : ""}
-        ${(wrongCats.modelos.length > 0) ? `modelos: ${wrongCats.modelos}` : ""}
-        ${(wrongCats.marcas.length > 0) ? `marcas: ${wrongCats.marcas}` : ""}
-      `);
-
     } catch (e) {
-      res.send(`${ANSI_RED}Houve um erro ao inserir os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}
-      ${e}`);
+      res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao inserir os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
+      });
 
     }
+
+    res.status(200).json({  
+      msg: `${ANSI_GREEN}Você registrou um total de ${ANSI_RESET}${ANSI_MAGENTA}${created.length} ${ANSI_GREEN}produtos no banco de dados${ANSI_RESET}` +
+      `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} de produtos no arquivo.${ANSI_RESET}.
+      Cheque as seguintes categorias (se nada houver, você escreveu todas corretamente.): 
+      ${(wrongCats.tipos.length > 0) ? `tipos: ${wrongCats.tipos}` : ""}
+      ${(wrongCats.grupos.length > 0) ? `grupos: ${wrongCats.grupos}` : ""}
+      ${(wrongCats.modelos.length > 0) ? `modelos: ${wrongCats.modelos}` : ""}
+      ${(wrongCats.marcas.length > 0) ? `marcas: ${wrongCats.marcas}` : ""}
+    `});
   },
 
   /**c
@@ -206,12 +220,12 @@ export default {
       | undefined = req.body;
 
 
+    const wrongCats: cats = { tipos: [], grupos: [], marcas: [], modelos: [] };
+    let updated: Produto.attributes[] = [];
     try {
       if (!produtos)
         throw new Error("O corpo da requisição está vazio.");
 
-      let updated: Produto.attributes[] = [];
-      const wrongCats: cats = { tipos: [], grupos: [], marcas: [], modelos: [] };
       if (query.object_type === "body") {
         const produtos: Produto.body<
           string, string,
@@ -344,19 +358,23 @@ export default {
       } else {
         throw new Error("O parâmetro query object_type não foi satisfeito corretamente.");
       }
-      return res.send(`${ANSI_GREEN}Você atualizou um total de ${ANSI_RESET}${ANSI_MAGENTA}${updated.length} ${ANSI_GREEN}produtos no banco de dados${ANSI_RESET}` +
-        `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} de produtos no arquivo.${ANSI_RESET}.
-        Cheque as seguintes categorias (se nada houver, você escreveu todas corretamente.): 
-        ${(!!!wrongCats.tipos.length) ? `tipos: ${wrongCats.tipos}` : ""})
-        ${(!!!wrongCats.grupos.length) ? `grupos: ${wrongCats.grupos}` : ""})
-        ${(!!!wrongCats.modelos.length) ? `modelos: ${wrongCats.modelos}` : ""})
-        ${(!!!wrongCats.marcas.length) ? `marcas: ${wrongCats.marcas}` : ""})
-      `);
 
     } catch (e) {
-      res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`);
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
+      });
     }
+
+    res.status(200).json({
+      msg: `${ANSI_GREEN}Você atualizou um total de ${ANSI_RESET}${ANSI_MAGENTA}${updated.length} ${ANSI_GREEN}produtos no banco de dados${ANSI_RESET}` +
+      `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} de produtos no arquivo.${ANSI_RESET}.
+      Cheque as seguintes categorias (se nada houver, você escreveu todas corretamente.): 
+      ${(!!!wrongCats.tipos.length) ? `tipos: ${wrongCats.tipos}` : ""})
+      ${(!!!wrongCats.grupos.length) ? `grupos: ${wrongCats.grupos}` : ""})
+      ${(!!!wrongCats.modelos.length) ? `modelos: ${wrongCats.modelos}` : ""})
+      ${(!!!wrongCats.marcas.length) ? `marcas: ${wrongCats.marcas}` : ""})
+    `});
   },
 
   async create_categoria(req: Request, res: Response, next: NextFunction) {
@@ -379,18 +397,25 @@ export default {
 
         const created = await ctrl.createCategoria(req.params.cat, uppercasedCats) as Cat.attributes[];
 
-        return res.send(`${ANSI_GREEN}Você registrou um total de ${ANSI_RESET}${ANSI_MAGENTA}${created.length}${ANSI_RESET} ${ANSI_GREEN}no banco de dados${ANSI_RESET}` +
-          `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} produtos no arquivo.${ANSI_RESET}`);
+        return res.status(200).json({
+          msg: `${ANSI_GREEN}Você registrou um total de ${ANSI_RESET}${ANSI_MAGENTA}${created.length}${ANSI_RESET} ${ANSI_GREEN}no banco de dados${ANSI_RESET}` +
+          `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN} produtos no arquivo.${ANSI_RESET}`
+        });
       }
 
       catOrCats.nome = catOrCats.nome.toUpperCase();
-      await ctrl.createCategoria(req.params.cat, catOrCats).catch(on_error);
+      await ctrl.createCategoria(req.params.cat, catOrCats);
 
-      return res.send(`${ANSI_GREEN}Você registrou ${ANSI_RESET}${ANSI_MAGENTA}${catOrCats} ${ANSI_RESET}${ANSI_GREEN}no banco de dados.${ANSI_RESET}`);
     } catch (e) {
-      res.send(`${ANSI_RED}Houve um erro ao inserir os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`);
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao inserir os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
+      })
     }
+    
+    res.status(200).json({
+      msg: `${ANSI_GREEN}Você registrou ${ANSI_RESET}${ANSI_MAGENTA}${catOrCats}${ANSI_RESET}${ANSI_GREEN}no banco de dados.${ANSI_RESET}`
+    });
   },
 
   /**
@@ -414,8 +439,10 @@ export default {
       destroyedRows = await Mdl.destroy({where: { id: id } });
 
     } catch (e) {
-      return res.json(`${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`)
+      return res.json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
+      })
     }
     res.json(`${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`);
 
@@ -464,14 +491,26 @@ export default {
         }
       }
     } catch (e) {
-      return res.json(`${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`)
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
+        ${e}`
+      })
     }
-    res.json(`${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`);
+    res.status(200).json({
+      msg: `${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`
+    });
   }, 
 
   async get_categorias(req: Request, res: Response) {
-    return res.json(await ctrl.getCats(req.params.cat).catch(on_error));
+    try {
+      res.json(await ctrl.getCats(req.params.cat));
+    } catch (e) {
+      res.status(500).json({
+        error: e,
+        message: `${ANSI_RED}Ocorreu um erro ao tentar retornar as categorias especificadas.${ANSI_RESET}`
+      })
+    }
   },
 
   async get_cat_columns(req: Request, res: Response) {

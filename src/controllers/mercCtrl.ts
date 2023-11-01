@@ -25,6 +25,7 @@ export default {
     const offset = +req.query.offset;
     const productType = req.query.type?.toString().toUpperCase() as string | undefined;
 
+    let allProducts: Mercadoria.attributes<"default">[] = []
     try {
       if (productType) {
         const productTypeId = await ctrlProd.getCatId("Tipo", productType);
@@ -37,20 +38,23 @@ export default {
         });
 
         if (productsFilteredByType) return res.json(productsFilteredByType);
-        else return res.status(400).send(`${ANSI_RED}Something went wrong with your type. Check if this type really exists.${ANSI_RESET}`);
+        else throw new Error(`${ANSI_RED}Something went wrong with your type. Check if this type really exists.${ANSI_RESET}`);
       }
-      const allProducts = await ctrl.getSome(limit, offset);
-      res.json(allProducts);
-    } catch (e) {
-      return res.send(`${ANSI_RED}Houve um erro ao buscar as mercadorias. Erro: ${ANSI_RESET}
-      ${e}`);
 
+      else allProducts = await ctrl.getSome(limit, offset);
+    } catch (e) {
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao buscar as mercadorias. ${ANSI_RESET}`
+      });
     }
+    res.json(allProducts);
   },
 
   async get_mercs_with_sku(req: Request, res: Response, next: NextFunction) {
     const sku = req.query.sku;
 
+    let mercadoria: Mercadoria.attributes<"default"> | null = null;
     try {
       if (typeof req.query.sku !== 'string'){
         throw new Error("400 - Bad Request: SKU não foi fornecido")
@@ -58,17 +62,19 @@ export default {
 
       const sku = req.query.sku;
 
-      const mercadoria = await ctrl.findByUnique(sku);
+      mercadoria = await ctrl.findByUnique(sku);
       if (!mercadoria) {
         throw new Error("Bad Request: SKU inexistente");
       }
 
-      return res.json(mercadoria);
     } catch (e) {
-      return res.status(400).send(`${ANSI_RED}Houve um erro ao buscar a mercadoria desejada (${sku}). Erro: ${ANSI_RESET}
-      ${e}`);
-
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao buscar a mercadoria desejada (${sku}). ${ANSI_RESET}`
+      });
+    
     }
+    res.json(mercadoria);
   },
 
   async get_related(req: Request, res: Response, next: NextFunction) {
@@ -101,8 +107,10 @@ export default {
 
       return res.json(relatedMercs);
     } catch (e) {
-      return res.send(`${ANSI_RED}Houve um erro ao buscar as mercadorias relacionadas. Erro: ${ANSI_RESET}
-      ${e}`);
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao buscar as mercadorias relacionadas. ${ANSI_RESET}`
+      });
     }
   },
 
@@ -124,11 +132,11 @@ export default {
       string
     > | Mercadoria.attributes<"creation"> | undefined = req.body;
 
+    let createdInstance: Mercadoria.attributes<"default"> | null = null;
     try {
       if (!mercadoria)
         throw new Error("Empty body.");
 
-      let createdInstance: Mercadoria.attributes<"default"> | null = null;
       if (query.object_type === "body") {
         const mercadoria: Mercadoria.body<string, string> = req.body;
 
@@ -159,12 +167,16 @@ export default {
       } else {
         throw new Error("O parâmetro query 'object_type' não foi satisfeito corretamente.")
       }
-      return res.send(`${ANSI_GREEN}Mercadoria inserida: ${ANSI_RESET}${ANSI_BLUE}${createdInstance}${ANSI_RESET}`);
 
     } catch (e) {
-      return res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`);
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
+      });
     }
+    res.status(200).json({
+      msg: `${ANSI_GREEN}Mercadoria inserida: ${ANSI_RESET}${ANSI_BLUE}${createdInstance.produto.sku}${ANSI_RESET}`
+    });
   },
 
   /**
@@ -182,13 +194,14 @@ export default {
       (Mercadoria.body<string, string> | Mercadoria.attributes<"creation">)[]
       | undefined = req.body;
 
+    /** 
+     * @var created will be fulfilled depending on object_type;
+     */
+    let created: Mercadoria.attributes[] = [];
     try {
       if (!mercadorias || mercadorias.length == 0)
         throw new Error("O corpo da requisição está vazio.")
-      /** 
-       * @var created will be fulfilled in one of the two conditions;
-       */
-      let created: Mercadoria.attributes[] = [];
+
       if (query.object_type === "body") {
         const mercadorias: Mercadoria.body<string, string>[] = req.body;
         created = await Promise.all(
@@ -243,13 +256,17 @@ export default {
         throw new Error("O parâmetro query 'object_type' não foi satisfeito corretamente.")
       }
 
-      res.send(`${ANSI_GREEN}Um total de ${ANSI_RESET}${created.length}${ANSI_GREEN} mercadorias foram adicionadas.${ANSI_RESET}
-      ${ANSI_GREEN}Haviam ${ANSI_BLUE}${mercadorias.length}${ANSI_RESET}${ANSI_GREEN}mercadorias no objeto${ANSI_RESET}`)
-
     } catch (e) {
-      res.send(`${ANSI_RED}Houve um erro ao criar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`);
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao criar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
+      });
     }
+
+    res.status(200).json({
+      msg: `${ANSI_GREEN}Um total de ${ANSI_RESET}${created.length}${ANSI_GREEN} mercadorias foram adicionadas.${ANSI_RESET}
+      ${ANSI_GREEN}Haviam ${ANSI_BLUE}${mercadorias.length}${ANSI_RESET}${ANSI_GREEN}mercadorias no objeto${ANSI_RESET}`
+  });
   },
 
   /**
@@ -266,11 +283,11 @@ export default {
       | Mercadoria.attributes<"creation">[]
       | undefined = req.body;
 
+    let updatedList: (Mercadoria.attributes | null)[] = []
     try {
       if (!mercadorias)
         throw new Error("Empty body.")
 
-      let updatedList: (Mercadoria.attributes | null)[] = []
       if (query.object_type === "body") {
         const mercadorias: Mercadoria.body<string, string>[] = req.body;
 
@@ -334,13 +351,17 @@ export default {
         throw new Error("O parâmetro object_type não foi satisfeito corretamente.")
       }
 
-      res.send(`${ANSI_GREEN}Você atualizou um total de ${ANSI_RESET}${ANSI_MAGENTA}${updatedList.length} ${ANSI_RESET}${ANSI_GREEN}mercadorias no banco de dados${ANSI_RESET}` +
-        `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN}de categorias no arquivo.${ANSI_RESET}`);
-
     } catch (e) {
-      res.send(`${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`);
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
+      });
     }
+    
+    res.status(200).json({
+      msg: `${ANSI_GREEN}Você atualizou um total de ${ANSI_RESET}${ANSI_MAGENTA}${updatedList.length} ${ANSI_RESET}${ANSI_GREEN}mercadorias no banco de dados${ANSI_RESET}` +
+      `\n${ANSI_GREEN}Haviam ${ANSI_RESET}${ANSI_MAGENTA} ${req.body.length} ${ANSI_RESET}${ANSI_GREEN}de categorias no arquivo.${ANSI_RESET}`
+    });
   },
 
   async delete_instance(req: Request, res: Response) {
@@ -358,10 +379,15 @@ export default {
 
       destroyedRows = await Mdl.destroy({where: {id: id}});
     } catch (e) {
-      return res.json(`${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}
-      ${e}`)
+      return res.status(500).json({
+        error: e,
+        msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
+      })
     }
-    res.json(`${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`);
+
+    res.status(200).json({
+      msg: `${ANSI_GREEN}Você removeu com sucesso ${ANSI_RESET}${ANSI_MAGENTA}${destroyedRows}${ANSI_RESET} ${ANSI_GREEN}registros do banco de dados${ANSI_RESET}`
+    });
   },
 
   async get_columns(req: Request, res: Response) {
