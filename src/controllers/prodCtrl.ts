@@ -26,7 +26,7 @@ export default {
   /**
    * @returns Fifty latest products ordered by name 
    */
-  async latest(req: Request, res: Response, next: NextFunction) {
+  async getProducts(req: Request, res: Response, next: NextFunction) {
     if (typeof req.query.sku !== 'undefined' && req.query.sku != '') return next();
 
     const offset: number | undefined = +(req.query.offset ?? 0) || undefined;
@@ -398,7 +398,7 @@ export default {
       destroyedRows = await Mdl.destroy({where: { id: id } });
 
     } catch (e) {
-      return res.json({
+      return res.status(500).json({
         error: e,
         msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
       })
@@ -412,8 +412,31 @@ export default {
     return res.json(ctrl.Model.getAttributes())
   },
 
-  async updateOnce(req: Request, res: Response) {
+  async updateFields(req: Request, res: Response) {
+    
+  },
 
+  async replaceAll(req: Request, res: Response) { 
+
+  },
+
+  async createOrReplace(req: Request, res: Response) { 
+    const SKU = req.params.sku;
+    const product: Produto.attributes<"creation"> = req.body;
+    
+    try {
+      const alreadyExists = (await ctrl.getIdByUnique(SKU)) || false;
+      if (alreadyExists) {
+        await Mdl.destroy({where: {sku: SKU}});
+      }   
+      const created = await Mdl.create(product)
+      res.status(200).json(created);
+    } catch (e) {
+      res.status(500).json({
+        error: e,
+        message: `${ANSI_RED}Houve um erro ao colocar o recurso na URI indicada.${ANSI_RESET}`
+      })
+    }
   }
 
 };
