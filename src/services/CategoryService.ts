@@ -21,7 +21,7 @@ export default class CategoryService {
     return Modelo;
   }
 
-  private async filterCatUniques(body: CreationAttributes<Tipo>[], Categoria: ModelStatic<Tipo | Grupo | Modelo | Marca>): Promise<CreationAttributes<Tipo>[]> {
+  private async filterCatUniques(body: CreationAttributes<Tipo>[], Categoria: ModelStatic<CAT>): Promise<CreationAttributes<Tipo>[]> {
     const filtered_map = await Promise.all(
       body.map(async (cat) => {
         return (await Categoria.findOne({
@@ -47,7 +47,7 @@ export default class CategoryService {
     return await Tipo.findAll({ raw: true });
   }
 
-  public async getCatId(Categoria: CAT_STATIC, nome: string): Promise<number | undefined> {
+  public async getCatId(nome: string, Categoria: CAT_STATIC,): Promise<number | undefined> {
     const tipo = await Categoria.findOne({
       where: {
         nome: nome
