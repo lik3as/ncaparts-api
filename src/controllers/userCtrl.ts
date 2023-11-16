@@ -5,7 +5,7 @@ import Filterable from "../contracts/Filterable";
 import Controller from "./Controller";
 
 export { Usuario };
-export default class UsarioCtrl extends Controller<Usuario> implements Filterable<Usuario> {
+export default class UsuarioCtrl extends Controller<Usuario> implements Filterable<Usuario> {
 
   constructor() {
     super(Usuario)
