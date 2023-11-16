@@ -3,7 +3,7 @@ import { Grupo, Marca, Modelo, Tipo } from "../models";
 
 export { Grupo, Marca, Modelo, Tipo };
 
-export default class Categorias {
+export default class CategoriasCtrl {
   static get tipoSkeleton() {
     return Tipo;
   }
