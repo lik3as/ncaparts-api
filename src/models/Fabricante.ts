@@ -26,7 +26,6 @@ export default class Fabricante extends Model<InferAttributes<Fabricante>, Infer
   @Column(DataType.INTEGER)
   declare id: CreationOptional<number>;
   
-  @Unique(true)
   @Column
   declare cnpj: string;
 
