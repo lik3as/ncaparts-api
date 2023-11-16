@@ -1,5 +1,5 @@
 import { Router } from "express";
-import index from "../controllers/indexCtrl";
+import index from "../services/indexServices";
 const router = Router();
 
 router.get("/", index.get_tables);
