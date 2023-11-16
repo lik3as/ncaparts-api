@@ -1,11 +1,11 @@
-import { Produto, Tipo, Marca, Modelo, Grupo, Fabricante, Mercadoria } from "../models/index";
+import { Produto, Mercadoria } from "../models/index";
 import Filterable from "../contracts/Filterable";
 import Controller from "./Controller";
 import { CreationAttributes } from "sequelize";
 import Database from "../models/index";
 
 
-export { Produto, Tipo, Marca, Modelo, Grupo };
+export { Produto };
 export default class ProdutoCtrl extends Controller<Produto> implements Filterable<Produto> {
 
   constructor () {
@@ -40,16 +40,7 @@ export default class ProdutoCtrl extends Controller<Produto> implements Filterab
 
     return await Produto.findAll(
       {
-        include: [
-          Produto,
-          Tipo,
-          Grupo,
-          Marca,
-          Modelo,
-          Fabricante,
-          Mercadoria
-        ]
-        ,
+        include: {all :true},
         subQuery: false,
         limit: LIMIT,
         offset: offset
