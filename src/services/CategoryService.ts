@@ -1,5 +1,6 @@
 import { CreationAttributes, ModelStatic } from "sequelize";
 import { Grupo, Marca, Modelo, Tipo } from "../models";
+import { CAT, CAT_STATIC, CAT_TABLE_NAME } from "../constants";
 
 export { Grupo, Marca, Modelo, Tipo };
 
@@ -34,85 +35,26 @@ export default class CategoryService {
     return body.filter((_, i) => filtered_map[i])
   }
 
-  public async createCategoria(body: CreationAttributes<Tipo>[] | CreationAttributes<Tipo>, Categoria: ModelStatic<Tipo | Marca | Modelo | Grupo>)
-  : Promise<(Tipo | Grupo | Marca | Modelo)[]> {
+  public async createCategoria(body: CreationAttributes<Tipo>[] | CreationAttributes<Tipo>, Categoria: ModelStatic<CAT>)
+  : Promise<CAT[]> {
     const filtered = await this.filterCatUniques(Array.isArray(body) ? body : [body], Categoria);
     const created = await Categoria.bulkCreate(filtered);
 
     return created;
   }
 
-  public async getCats(categoria: "Tipos" | "Grupos" | "Marcas" | "Modelos"): Promise<(Tipo | Grupo | Marca | Modelo)[]> {
-    switch (categoria) {
-      case ('Tipos'): {
-        return await Tipo.findAll({ raw: true });
-
-      }
-      case ('Grupos'): {
-        return await Grupo.findAll({ raw: true });
-
-      }
-      case ('Marcas'): {
-        return await Marca.findAll({ raw: true })
-
-      }
-      case ('Modelos'): {
-        return await Modelo.findAll({ raw: true })
-
-      }
-      default:
-        throw new Error(categoria + " it's not a table.");
-    }
+  public async getCats(): Promise<CAT[]> {
+    return await Tipo.findAll({ raw: true });
   }
 
-  public async getCatId(categoria: "Tipos" | "Grupos" | "Marcas" | "Modelos", nome: string): Promise<number | undefined> {
-    if (nome == undefined) return undefined;
-    switch (categoria) {
-      case ('Tipos'): {
-        const tipo = (await Tipo.findOne({
-          where: {
-            nome: nome
-          },
-          attributes: ['id']
-        }));
+  public async getCatId(Categoria: CAT_STATIC, nome: string): Promise<number | undefined> {
+    const tipo = await Categoria.findOne({
+      where: {
+        nome: nome
+      },
+      attributes: ['id']
+    });
 
-        tipo?.id
-      }
-
-      case ('Grupos'): {
-        const grupo = (await Grupo.findOne({
-          where: {
-            nome: nome,
-          },
-          attributes: ['id']
-        }));
-
-        return grupo?.id;
-      }
-
-      case ('Marcas'): {
-        const marca = await Marca.findOne({
-          where: {
-            nome: nome,
-          },
-          attributes: ['id']
-        });
-
-        return marca?.id;
-      }
-
-      case ('Modelos'): {
-        const modelo = (await Modelo.findOne({
-          where: {
-            nome: nome,
-          },
-          attributes: ['id']
-        }))
-
-        return modelo?.id;
-      }
-      default:
-        throw new Error(categoria + " it's not a table.");
-    }
+    return tipo?.id
   }
 }
