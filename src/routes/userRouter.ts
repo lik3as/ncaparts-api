@@ -1,17 +1,17 @@
 import { Router } from 'express'
 
-import services from '../services/userServices';
-import util from '../middleware/util';
+import usrCtrl from '../controllers/userController';
+import authCtrl from '../controllers/authController';
 
 const router = Router()
 
-router.post('/Clientes', util.verifyCommonJWT, services.create_many, services.create);
-router.get('/Clientes/columns', util.verifyCommonJWT, services.get_columns);
+router.post('/Clientes', authCtrl.verifyCommonJWT, usrCtrl.create_many, usrCtrl.create);
+router.get('/Clientes/columns', authCtrl.verifyCommonJWT, usrCtrl.get_columns);
 
 /**
  * NEED AUTHORIZATION
  */
-router.get('/Clientes', util.verifyMasterJWT, services.all);
-router.delete('/Clientes', util.verifyMasterJWT, services.delete_instance);
+router.get('/Clientes', authCtrl.verifyMasterJWT, usrCtrl.all);
+router.delete('/Clientes', authCtrl.verifyMasterJWT, usrCtrl.delete_instance);
 
 export default router;

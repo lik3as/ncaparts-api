@@ -1,12 +1,12 @@
 import { Router } from "express";
-import services from '../services/fabServices'
+import fabController from '../controllers/fabController'
 const router = Router();
 
-router.get("/Fabricantes", services.getModels);
-router.post("/Fabricantes", services.createMany, services.updateMany);
+router.get("/Fabricantes", fabController.getSome);
+router.post("/Fabricantes", fabController.createMany, fabController.updateMany);
 
 /**
  * NEEDS AUTHORIZATION
  */
-router.delete("/Fabricantes", services.delete_instance);
+router.delete("/Fabricantes", fabController.delete);
 export default router

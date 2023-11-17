@@ -1,9 +1,9 @@
 import { Router } from 'express'
 
-import middlewares from '../services/authServices'
+import authController from '../controllers/authController'
 
 const router = Router();
 
-router.post('/auth/User', middlewares.handleCookieRequest);
+router.post('/auth/User', authController.handleCookieRequest);
 
 export default router;
