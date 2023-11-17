@@ -19,6 +19,7 @@ import {
   ProdModel,
   ProdTipo,
 } from './associative';
+import { ANSI_MAGENTA, ANSI_RESET } from '../constants';
 
 const envMode = (env.env === 'production') ? env.production : env.development;
 
@@ -50,7 +51,7 @@ sequelize.addModels([
 ]);
 
 sequelize.authenticate().then(() => {
-  console.log('\n\x1b[35mDatabase was connected with Success!\x1b[0m')
+  console.log(`\n${ANSI_MAGENTA}database connection stabilished${ANSI_RESET}`)
 }).catch(err => {
   console.log(err)
 });
@@ -64,9 +65,9 @@ export default class Database {
     sequelize.sync({
       force: force,
       alter: alter,
-      logging: sql => {
+      logging: process.argv.includes("-v") ? sql => {
         console.log(`SQL \x1b[35mSYNC\x1b[0m: \x1b[33m ${sql} \x1b[0m`)
-      }
+      } : undefined
     });
   }
 
