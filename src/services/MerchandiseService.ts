@@ -34,7 +34,9 @@ export default class MerchandiseService extends Service<Mercadoria> implements F
     }).findOne();
   }
 
-  async getSome(limit: number = 15, offset: number = 0): Promise<Mercadoria[]> {
+  async getSome(limit: number, offset: number = 0): Promise<Mercadoria[]> {
+    if (limit < 1) throw new Error("Limit must be greater than 0");
+
     return await Mercadoria.findAll({
       attributes: { exclude: ["updatedAt", "createdAt"] },
       include: [{
