@@ -84,7 +84,7 @@ export default {
     });
   },
 
-  async delete_instance(req: Request, res: Response) {
+  async delete(req: Request, res: Response) {
     const name = req.params.name;
 
     let destroyedRows = 0;
