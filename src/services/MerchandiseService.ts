@@ -3,6 +3,7 @@ import Filterable from "../contracts/Filterable";
 
 import Service from "./Service";
 import { CreationAttributes } from "sequelize";
+import WithRequiredProps from "../utils/WithRequiredProps";
 
 
 export { Mercadoria }
@@ -12,12 +13,12 @@ export default class MerchandiseService extends Service<Mercadoria> implements F
     super(Mercadoria);
   }
 
-  async filter(mercs: CreationAttributes<Mercadoria>[]): Promise<CreationAttributes<Mercadoria>[]> {
+  async filter(mercs: WithRequiredProps<CreationAttributes<Mercadoria>, "produto">[]): Promise<CreationAttributes<Mercadoria>[]> {
     const mercMap = await Promise.all(
       mercs.map(
         async (merc) => {
           return await this.findByUnique(
-            (merc.fk_produto || merc.produto?.SKU)!
+            merc.produto.UUID
           ) == null
         }
       )
