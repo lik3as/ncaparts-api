@@ -3,27 +3,13 @@ import { ScopesOptionsGetter, includeProd, includeCatsProps } from "./utilScopes
 import { FindOptions, IncludeOptions, Op, literal } from "sequelize";
 
 const mercScopes: ScopesOptionsGetter = () => ({
-  find_unique(produto: number | string): FindOptions<Mercadoria> | IncludeOptions & FindOptions<Mercadoria> {
-    if (typeof produto === 'number') {
-      return {
-        attributes: {exclude: ['createdAt, updatedAt']},
-        where: {
-          fk_produto: produto
-        },
-        ...includeProd
-
-      }
-    }
+  find_unique(produto: string): FindOptions<Mercadoria> | IncludeOptions & FindOptions<Mercadoria> {
     return {
       attributes: {exclude: ['createdAt, updatedAt']},
       include: [{
         model: Produto,
-        required: true,
         where: {
-          sku: produto,
-          [Op.or]: {
-            UUID: produto
-          }
+          UUID: produto,
         },
         ...includeCatsProps
       }]

@@ -7,10 +7,7 @@ export const prodScopes: ScopesOptionsGetter = () => (
     find_unique(unique: string): FindOptions<Attributes<Produto>> {
       return {
         where: {
-          SKU: unique,
-          [Op.or]: {
-            UUID: unique
-          }
+          UUID: unique,
         },
         include: [
           Tipo,
