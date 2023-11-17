@@ -60,7 +60,7 @@ export default class MerchandiseService extends Service<Mercadoria> implements F
     return Mercadoria;
   }
 
-  async getIdByUnique(unique: number): Promise<number | undefined> {
+  async getIdByUnique(unique: number | string): Promise<number | undefined> {
     const instance = await this.findByUnique(unique);
 
     return (instance)
