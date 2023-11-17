@@ -34,10 +34,11 @@ import {
   AllowNull,
   HasOne,
   DefaultScope,
+  Default,
 } from 'sequelize-typescript'
 
 import { ProdGrupo, ProdMarca, ProdModel, ProdTipo } from './associative';
-import { CreationOptional, InferAttributes, InferCreationAttributes, CreationAttributes, UUIDV4 } from 'sequelize';
+import { CreationOptional, InferAttributes, InferCreationAttributes, CreationAttributes } from 'sequelize';
 import prodScopes from '../scopes/prodScopes'
 
 @Scopes(prodScopes)
@@ -68,7 +69,8 @@ export default class Produto extends Model<InferAttributes<Produto>, InferCreati
   declare id: CreationOptional<number>;
 
   @Unique(true)
-  @Column(DataType.UUIDV4)
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
   declare UUID: CreationOptional<string>;
 
   @Column(DataType.ARRAY(DataType.STRING(1024)))
