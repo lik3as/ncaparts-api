@@ -79,7 +79,7 @@ export default {
     });
   },
 
-  async create_many(req: Request, res: Response, next: NextFunction) {
+  async createMany(req: Request, res: Response, next: NextFunction) {
     const produtos: CreationAttributes<Produto>[] | undefined = req.body;
 
     let created: Produto[] = [];
@@ -117,7 +117,7 @@ export default {
    * need docs
    * @param req.params.UUID is the unique;
    */
-  async delete_produto(req: Request, res: Response) {
+  async delete(req: Request, res: Response) {
     const UUID = req.params.UUID;
 
     let produto: Produto | null = null
@@ -125,7 +125,7 @@ export default {
       produto = await prodService.findByUnique(UUID);
 
       if (!produto)
-        throw new RequestValidationError("Este produto não existe no banco de dados. " + `(Resrouce ID: ${UUID})`);
+        throw new RequestValidationError("This product does not exists on the database. " + `(Resrouce ID: ${UUID})`);
 
       await produto.destroy();
 

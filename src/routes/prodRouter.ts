@@ -11,12 +11,12 @@ router.get('/Produtos/columns', prodCtrl.get_columns);
  * ONLY WITH AUTHORIZATION
  */
 
-router.get('/Produtos', authCtrl.verifyMasterJWT, prodCtrl.getOne); /** RETURN ALL PRODUCTS */
-router.get('/Produtos/:UUID', authCtrl.verifyMasterJWT, prodCtrl.getProducts); /** RETURN ONE PRODUCT */
+router.get('/Produtos/:UUID', authCtrl.verifyMasterJWT, prodCtrl.getOne); /** RETURN ONE PRODUCT */
+router.get('/Produtos', authCtrl.verifyMasterJWT, prodCtrl.getSome); /** RETURN SOME PRODUCTS */
 
-router.post('/Produtos', authCtrl.verifyMasterJWT, prodCtrl.create_many); /** CREATE MULTIPLE PRODUCTS */
+router.post('/Produtos', authCtrl.verifyMasterJWT, prodCtrl.createMany); /** CREATE MULTIPLE PRODUCTS */
 
-router.delete('/Produtos/:UUID', authCtrl.verifyCommonJWT, prodCtrl.delete_produto); /** DELETE ONE PRODUCT */
+router.delete('/Produtos/:UUID', authCtrl.verifyCommonJWT, prodCtrl.delete); /** DELETE ONE PRODUCT */
 
 router.put('/Produtos', authCtrl.verifyMasterJWT, prodCtrl.replaceAll); /** REPLACE */
 
