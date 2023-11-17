@@ -1,17 +1,19 @@
 import express from 'express'
 import cookies from 'cookie-parser'
 
-import usr from './routes/tables/router.usr';
-import authUser from './routes/auth/authUser';
+import usrRouter from './routes/usrRouter';
+import authRouter from './routes/authRouter';
 
-import util from './middleware/util'
-import prod from './routes/tables/router.prod';
-import merc from './routes/tables/router.merc';
-import cats from './routes/tables/router.cats';
-import fab from './routes/tables/router.fab';
-import index from './routes';
+import prodRouter from './routes/prodRouter';
+import merchRouter from './routes/merchRouter';
+import catRouter from './routes/catRouter';
+import fabRouter from './routes/fabRouter';
+import tableRouter from './routes/tableRouter';
 
-import { Database } from 'ncaparts-db';
+import Database from './models';
+import allowCORS from './middleware/allowCORS';
+import logger from './middleware/logger'
+
 
 if(process.argv.includes('-f')) Database.delaySync({after: 4, force: true});
 const app: express.Application = express()
@@ -23,16 +25,16 @@ app.use(express.urlencoded({
 
 app.use(cookies());
 
-app.use(util.allow_origin);
-app.use(util.info);
+app.use(logger);
+app.use(allowCORS);
 
-app.use(index);
-app.use(cats);
-app.use(prod);
-app.use(usr);
-app.use(merc);
-app.use(fab);
-app.use(authUser);
+app.use(tableRouter);
+app.use(catRouter);
+app.use(prodRouter);
+app.use(usrRouter);
+app.use(merchRouter);
+app.use(fabRouter);
+app.use(authRouter);
 
 const port = process.env.PORT || 8080;
 
