@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export default {
-  handleCookieRequest(req: Request, res: Response) {
+  sendToken(req: Request, res: Response) {
     res.clearCookie('token');
     const {username, passwd, email} = req.body;
 
@@ -21,14 +21,7 @@ export default {
       }
     ).status(200).send('Cookie Comum Enviado');
   },
-
-  allow_origin(req: Request, res: Response, next: NextFunction) {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    next();
-  },
-  
+ 
   verifyMasterJWT(req: Request, res: Response, next: NextFunction) {
     const token: string | undefined = req.cookies.token;
     if (!token) return res.status(400).send("Você não forneceu uma token.");
