@@ -35,7 +35,7 @@ export default {
     } catch (err) {
       switch (err) {
         case (err instanceof RequestValidationError): {
-          res.status(401);
+          res.status(400);
           break;
         };
         default: {
@@ -78,7 +78,7 @@ export default {
     } catch (err) {
       switch (err) {
         case (err instanceof RequestValidationError): {
-          res.status(401);
+          res.status(400);
           break;
         };
         default: {
@@ -115,7 +115,7 @@ export default {
     } catch (err) {
       switch (err) {
         case (err instanceof RequestValidationError): {
-          res.status(401);
+          res.status(400);
           break;
         };
         default: {
