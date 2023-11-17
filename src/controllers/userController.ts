@@ -33,8 +33,8 @@ export default {
 
       created = await Usuario.bulkCreate(users);
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
@@ -76,8 +76,8 @@ export default {
 
       created = await Usuario.create(user);
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
@@ -113,8 +113,8 @@ export default {
 
       destroyedRows = await Usuario.destroy({ where: { id: id } });
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };

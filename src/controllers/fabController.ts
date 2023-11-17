@@ -23,8 +23,8 @@ export default {
     try {
       fabricantes = await Fabricante.findAll({limit: +query.limit, offset: +query.offset});
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
@@ -62,8 +62,8 @@ export default {
 
       created = await Fabricante.bulkCreate(fabricantes);
     } catch(err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
@@ -96,8 +96,8 @@ export default {
 
       destroyedRows = await Fabricante.destroy({where: {id: id}});
     } catch (err) { 
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };

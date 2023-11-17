@@ -26,8 +26,8 @@ export default {
       
       merchs = await merchService.getSome(limit, offset);
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         }
@@ -56,8 +56,8 @@ export default {
       }
 
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
@@ -99,8 +99,8 @@ export default {
 
       created = await Mercadoria.create(mercadoria); 
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
@@ -131,8 +131,8 @@ export default {
 
       created = await Mercadoria.bulkCreate(mercadorias);
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
@@ -166,8 +166,8 @@ export default {
       affectedRows = await Mercadoria.destroy({where: {produto: {UUID: UUID}}});
       created = await Mercadoria.create(merch);
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };

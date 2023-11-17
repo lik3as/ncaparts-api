@@ -36,8 +36,8 @@ export default {
 
       await ctrl.createCategoria(cat, catMap[categoria as CAT_TABLE_NAME]);
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         }
@@ -84,8 +84,8 @@ export default {
 
       destroyedRows = await catMap[categoria as CAT_TABLE_NAME].destroy({ where: { id: id } });
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         }
@@ -116,8 +116,8 @@ export default {
 
       cats = await ctrl.getCats(catMap[categoria as CAT_TABLE_NAME]);      
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break; 
         };
@@ -149,8 +149,8 @@ export default {
 
       columns = catMap[categoria as CAT_TABLE_NAME].getAttributes();
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         }

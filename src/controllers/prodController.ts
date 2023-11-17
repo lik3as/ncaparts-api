@@ -25,8 +25,8 @@ export default {
 
       res.status(200).json(await prodService.getSome(limit, offset));
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
@@ -57,8 +57,8 @@ export default {
         throw new RequestValidationError("Este RID não corresponde a nenhum produto: " + UUID);
 
     } catch (err) {
-      switch (err) {
-        case err instanceof RequestValidationError: {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break
         }
@@ -91,8 +91,8 @@ export default {
 
       created = await ProductService.createAndAssociate(produtos);
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         }
@@ -130,8 +130,8 @@ export default {
       await produto.destroy();
 
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
@@ -176,8 +176,8 @@ export default {
       await Produto.truncate({ cascade: true });
       created = await ProductService.createAndAssociate(produtos)
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
@@ -220,8 +220,8 @@ export default {
       }
 
     } catch (err) {
-      switch (err) {
-        case (err instanceof RequestValidationError): {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
           res.status(400);
           break;
         };
