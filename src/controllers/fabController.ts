@@ -34,7 +34,7 @@ export default {
         }
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao retornar os fabricantes.${ANSI_RESET}`
       })
     }
@@ -73,7 +73,7 @@ export default {
         };
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao criar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
       });
     }
@@ -108,7 +108,7 @@ export default {
       }
 
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
       }); 
     }

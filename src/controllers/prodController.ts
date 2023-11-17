@@ -2,7 +2,7 @@ import ProductService, { Produto } from "../services/ProductService";
 
 import { CreationAttributes } from "sequelize"
 
-import { ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET } from "../constants";
+import { ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET, QUERY_LIMIT } from "../constants";
 import { Request, Response, NextFunction } from "express";
 import RequestValidationError from '../errors/RequestValidationError';
 
@@ -10,19 +10,33 @@ const prodService = new ProductService();
 
 export default {
 
-  /**
-   * @returns Fifty latest products ordered by name 
-   */
-  async getProducts(req: Request, res: Response, next: NextFunction) {
-    if (typeof req.query.SKU !== 'undefined' && req.query.SKU != '') return next();
+  async getSome(req: Request, res: Response, next: NextFunction) {
+    if (req.query.UUID) return next();
 
-    const offset: number | undefined = +(req.query.offset ?? 0) || undefined;
-    const limit: number | undefined = +(req.query.limit ?? 0) || undefined;
     try {
+      if (!req.query.limit || +req.query.limit < 0) 
+      throw new RequestValidationError("Limit cannot be a negative number.");
+
+      if (+req.query.limit > QUERY_LIMIT) 
+      throw new RequestValidationError("Limit cannot be greater than " + QUERY_LIMIT);
+
+      const offset: number  = +(req.query.offset || 0);
+      const limit: number = +(req.query.limit || 0);
+
       res.status(200).json(await prodService.getSome(limit, offset));
-    } catch (e) {
-      res.status(500).json({
-        error: e,
+    } catch (err) {
+      switch (err) {
+        case (err instanceof RequestValidationError): {
+          res.status(400);
+          break;
+        };
+        default: {
+          res.status(500);
+          break;
+        }
+      }
+      res.json({
+        error: (err as any).toString(),
         msg: `${ANSI_RESET}Houve um erro ao retornar os produtos.${ANSI_RESET}`
       });
     }
@@ -54,7 +68,7 @@ export default {
         }
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao consultar o produto. Contate o administrador do sistema caso precise de ajuda.${ANSI_RESET}`
       });
     }
@@ -88,7 +102,7 @@ export default {
         }
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao inserir os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
       });
     }
@@ -127,7 +141,7 @@ export default {
         }
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. Erro: ${ANSI_RESET}`
       })
     }
@@ -173,7 +187,7 @@ export default {
         };
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Um erro ocorreu ao substituir todos os produtos, contate o administrador do sistema se necessário.${ANSI_RESET}`
       });
     }
@@ -217,7 +231,7 @@ export default {
         }
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         message: `${ANSI_RED}Houve um erro ao colocar o recurso na URI indicada.${ANSI_RESET}`
       });
     }

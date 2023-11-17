@@ -37,7 +37,7 @@ export default {
         }
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao buscar as mercadorias. ${ANSI_RESET}`
       });
     }
@@ -68,7 +68,7 @@ export default {
       }
 
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao buscar a mercadoria desejada (${UUID}). ${ANSI_RESET}`
       });
     
@@ -110,7 +110,7 @@ export default {
         }
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda.${ANSI_RESET}`
       });
     }
@@ -142,7 +142,7 @@ export default {
         }
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao criar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
       });
     }
@@ -177,7 +177,7 @@ export default {
         };
       }
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao atualizar os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
       });
     }

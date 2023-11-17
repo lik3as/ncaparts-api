@@ -48,7 +48,7 @@ export default {
       }
 
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao inserir os dados disponibilizados no objeto. Contate o administrador do sistema caso precise de ajuda.${ANSI_RESET}`
       })
     }
@@ -96,7 +96,7 @@ export default {
       }
 
       return res.json({
-        error: err,
+        error: (err as any).toString(),
         msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
       })
     }
@@ -128,7 +128,7 @@ export default {
         }
       }
       res.status(500).json({
-        error: err,
+        error: (err as any).toString(),
         message: `${ANSI_RED}Ocorreu um erro ao tentar retornar as categorias especificadas.${ANSI_RESET}`
       })
     }
