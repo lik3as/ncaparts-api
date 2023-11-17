@@ -3,6 +3,7 @@ import { ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET, CAT, CAT_STATIC, CAT_TA
 import { Request, Response, NextFunction } from "express";
 import { CreationAttributes, ModelAttributeColumnOptions } from "sequelize";
 import RequestValidationError from "../errors/RequestValidationError";
+import ResourceNotFoundError from "../errors/ResourceNotFoundError";
 
 const ctrl = new CategoryService();
 
@@ -75,18 +76,22 @@ export default {
     let destroyedRows = 0;
     try {
       if (!CAT_TABLE_NAMES.includes(categoria))
-        throw new RequestValidationError("This category does not exists on database. " + `(${typeof name})`);
+        throw new ResourceNotFoundError("This category does not exists on database. " + `(${typeof name})`);
 
       const id = await ctrl.getCatId(name, catMap[categoria as CAT_TABLE_NAME]);
 
       if (!id)
-        throw new RequestValidationError("The category you're trying to delete does not exists on database. " + `(${name} - ${categoria})`);
+        throw new ResourceNotFoundError("The category you're trying to delete does not exists on database. " + `(${name} - ${categoria})`);
 
       destroyedRows = await catMap[categoria as CAT_TABLE_NAME].destroy({ where: { id: id } });
     } catch (err) {
       switch ((err as Object).constructor) {
         case RequestValidationError: {
           res.status(400);
+          break;
+        }
+        case ResourceNotFoundError: {
+          res.status(404);
           break;
         }
         default: {

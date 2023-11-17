@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ANSI_BLUE, ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET } from "../constants";
 import ManufacturerService, { Fabricante } from '../services/ManufacturerService';
 import RequestValidationError from '../errors/RequestValidationError';
+import ResourceNotFoundError from '../errors/ResourceNotFoundError';
 
 const manfacService = new ManufacturerService();
 
@@ -101,6 +102,10 @@ export default {
           res.status(400);
           break;
         };
+        case ResourceNotFoundError: {
+          res.status(404);
+          break;
+        }
         default: {
           res.status(500);
           break;

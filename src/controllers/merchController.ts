@@ -4,6 +4,8 @@ import { Request, Response, NextFunction } from "express";
 import { ANSI_BLUE, ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET } from "../constants";
 import { Attributes, CreationAttributes, where } from "sequelize";
 import RequestValidationError from "../errors/RequestValidationError";
+import RequestAuthorizationError from "../errors/RequestAuthorizationError";
+import ResourceNotFoundError from "../errors/ResourceNotFoundError";
 
 const merchService = new MerchandiseService();
 
@@ -52,7 +54,7 @@ export default {
     try {
       merch = await merchService.findByUnique(UUID);
       if (!merch) {
-        throw new RequestValidationError("The UUID provided does not exist in the database.");
+        throw new ResourceNotFoundError("The provided UUID does not exist in the database.");
       }
 
     } catch (err) {
@@ -61,6 +63,10 @@ export default {
           res.status(400);
           break;
         };
+        case ResourceNotFoundError: {
+          res.status(404);
+          break;
+        }
         default: {
           res.status(500);
           break;
@@ -196,12 +202,26 @@ export default {
       const id = await merchService.getIdByUnique(UUID);
 
       if (!id)
-      throw new RequestValidationError("This merchandise does not exists on database." + `(${UUID})`);
+      throw new ResourceNotFoundError("This merchandise does not exists on database." + `(${UUID})`);
 
       destroyedRows = await Mercadoria.destroy({where: {id: id}});
-    } catch (e) {
-      return res.status(500).json({
-        error: e,
+    } catch (err) {
+      switch ((err as Object).constructor) {
+        case RequestValidationError: {
+          res.status(400);
+          break;
+        };
+        case ResourceNotFoundError: {
+          res.status(404);
+          break;
+        }
+        default: {
+          res.status(500);
+          break;
+        }
+      }
+      return res.json({
+        error: err,
         msg: `${ANSI_RED}Houve um erro ao deletar a tupla indicada. Contate o administrador do sistema caso precise de ajuda. ${ANSI_RESET}`
       })
     }

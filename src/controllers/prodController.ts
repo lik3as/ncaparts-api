@@ -5,6 +5,7 @@ import { CreationAttributes } from "sequelize"
 import { ANSI_GREEN, ANSI_MAGENTA, ANSI_RED, ANSI_RESET, QUERY_LIMIT } from "../constants";
 import { Request, Response, NextFunction } from "express";
 import RequestValidationError from '../errors/RequestValidationError';
+import ResourceNotFoundError from "../errors/ResourceNotFoundError";
 
 const prodService = new ProductService();
 
@@ -54,13 +55,17 @@ export default {
 
     try {
       if (!produto)
-        throw new RequestValidationError("Este RID não corresponde a nenhum produto: " + UUID);
+        throw new ResourceNotFoundError("The indicated product does not exist on the database: " + UUID);
 
     } catch (err) {
       switch ((err as Object).constructor) {
         case RequestValidationError: {
           res.status(400);
           break
+        };
+        case ResourceNotFoundError: {
+          res.status(404);
+          break;
         }
         default: {
           res.status(500);
@@ -125,7 +130,7 @@ export default {
       produto = await prodService.findByUnique(UUID);
 
       if (!produto)
-        throw new RequestValidationError("This product does not exists on the database. " + `(Resrouce ID: ${UUID})`);
+        throw new ResourceNotFoundError("This product does not exists on the database. " + `(Resrouce ID: ${UUID})`);
 
       await produto.destroy();
 
@@ -135,6 +140,9 @@ export default {
           res.status(400);
           break;
         };
+        case ResourceNotFoundError: {
+          res.status(404)
+        }
         default: {
           res.status(500);
           break;
