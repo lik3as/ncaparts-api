@@ -43,8 +43,8 @@ export default class CategoryService {
     return created;
   }
 
-  public async getCats(): Promise<CAT[]> {
-    return await Tipo.findAll({ raw: true });
+  public async getCats(Categoria: CAT_STATIC): Promise<CAT[]> {
+    return await Categoria.findAll({ raw: true });
   }
 
   public async getCatId(nome: string, Categoria: CAT_STATIC,): Promise<number | undefined> {
