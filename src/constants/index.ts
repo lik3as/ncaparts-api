@@ -12,3 +12,5 @@ export type CAT_STATIC = ModelStatic<Tipo | Marca | Modelo | Grupo>;
 export type CAT_NAME = "Tipo" | "Grupo" | "Modelo" | "Marca";
 export type CAT_TABLE_NAME = "Tipos" | "Grupos" | "Modelos" | "Marcas";
 export const CAT_TABLE_NAMES = ["Tipos", "Grupos", "Modelos", "Marcas"]
+
+export const QUERY_LIMIT=20;
