@@ -1,20 +1,19 @@
 import { Router } from 'express'
 
-import services from '../services/mercServices';
-import util from '../middleware/util';
+import merchCtrl from '../controllers/merchController';
+import authCtrl from '../controllers/authController';
 
 const router = Router();
 
-router.get('/Mercadorias', services.get_mercs, services.get_mercs_with_sku);
-router.get('/Mercadorias/related', services.get_related);
-router.get('/Mercadorias/Columns', services.get_columns);
-router.get('/Mercadorias/records', services.count);
+router.get('/Mercadorias', merchCtrl.getSome, merchCtrl.getMerch);
+router.get('/Mercadorias/Columns', merchCtrl.get_columns);
+router.get('/Mercadorias/records', merchCtrl.count);
 
 /**
  * ONLY WITH AUTHORIZATION
  */
-router.post('/Mercadorias', util.verifyMasterJWT, services.create, services.create_many, services.update);
-router.delete('/Mercadorias', util.verifyMasterJWT, services.delete_instance);
+router.post('/Mercadorias', authCtrl.verifyMasterJWT, merchCtrl.create, merchCtrl.create_many);
+router.delete('/Mercadorias', authCtrl.verifyMasterJWT, merchCtrl.delete);
 
 
 export default router;

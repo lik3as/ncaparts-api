@@ -1,24 +1,24 @@
 import { Router } from 'express';
-import services from '../services/prodServices';
-import util from '../middleware/util';
+import prodCtrl from '../controllers/prodController';
+import authCtrl from '../controllers/authController';
 
 const router = Router();
 
-router.get('/Produtos/records', services.count);
-router.get('/Produtos/columns', services.get_columns);
+router.get('/Produtos/records', prodCtrl.count);
+router.get('/Produtos/columns', prodCtrl.get_columns);
 
 /**
  * ONLY WITH AUTHORIZATION
  */
 
-router.get('/Produtos', util.verifyMasterJWT, services.getOne); /** RETURN ALL PRODUCTS */
-router.get('/Produtos/:UUID', util.verifyMasterJWT, services.getProducts); /** RETURN ONE PRODUCT */
+router.get('/Produtos', authCtrl.verifyMasterJWT, prodCtrl.getOne); /** RETURN ALL PRODUCTS */
+router.get('/Produtos/:UUID', authCtrl.verifyMasterJWT, prodCtrl.getProducts); /** RETURN ONE PRODUCT */
 
-router.post('/Produtos', util.verifyMasterJWT, services.create_many); /** CREATE MULTIPLE PRODUCTS */
+router.post('/Produtos', authCtrl.verifyMasterJWT, prodCtrl.create_many); /** CREATE MULTIPLE PRODUCTS */
 
-router.delete('/Produtos/:UUID', util.verifyCommonJWT, services.delete_produto); /** DELETE ONE PRODUCT */
+router.delete('/Produtos/:UUID', authCtrl.verifyCommonJWT, prodCtrl.delete_produto); /** DELETE ONE PRODUCT */
 
-router.put('/Produtos', util.verifyMasterJWT, services.replaceAll); /** REPLACE */
+router.put('/Produtos', authCtrl.verifyMasterJWT, prodCtrl.replaceAll); /** REPLACE */
 
 /**
  * TEMP DOCS
